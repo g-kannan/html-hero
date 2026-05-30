@@ -355,6 +355,13 @@ textarea:focus {
   margin-bottom: 12px;
 }
 
+.panel-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
 .panel-title h2 {
   margin: 0;
   font-size: 1rem;
@@ -675,6 +682,15 @@ input[type="range"]:focus {
 
   .btn {
     width: 100%;
+  }
+
+  .panel-title {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panel-actions {
+    justify-content: stretch;
   }
 
   .tabs {

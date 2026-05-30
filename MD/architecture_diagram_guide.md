@@ -4,7 +4,7 @@ Create professional technical architecture diagrams as self-contained HTML files
 
 ### Typography
 
-Use SF Mono for all text
+Use SF Mono if not part of input
 
 Font sizes: 14px for component names, 11px for sublabels, 10px for annotations, 9px (Strictly Uppercase)
 
