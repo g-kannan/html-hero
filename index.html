@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture Studio</title>
+  <link rel="stylesheet" href="CSS/stylehero.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Architecture design workspace</div>
+        <h1>Architecture Studio</h1>
+        <p class="intro">Configure architecture inputs, tune data flow behavior, and generate presentation-ready design notes.</p>
+      </div>
+      <div class="stats app-actions" aria-live="polite">
+        <div class="stat">
+          <b id="totalCount">0</b>
+          <span>Palettes</span>
+        </div>
+        <div class="stat">
+          <b id="selectedCount">0</b>
+          <span>Active</span>
+        </div>
+        <button id="copyAllBtn" class="btn" type="button" title="Copy all tabs as Markdown">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Copy All
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Architecture Studio sections">
+      <button class="tab-button active" type="button" id="paletteTab" data-tab="palette" aria-controls="palettePanel" aria-selected="true">Palette</button>
+      <button class="tab-button" type="button" id="workloadTab" data-tab="workload" aria-controls="workloadPanel" aria-selected="false">Workload Inputs</button>
+      <button class="tab-button" type="button" id="targetPlatformTab" data-tab="targetPlatform" aria-controls="targetPlatformPanel" aria-selected="false">Target Platform</button>
+      <button class="tab-button" type="button" id="diagramGuideTab" data-tab="diagramGuide" aria-controls="diagramGuidePanel" aria-selected="false">Architecture Diagram Skill</button>
+    </nav>
+
+    <p id="copyAllStatus" class="status global-status" aria-live="polite"></p>
+
+    <section id="palettePanel" class="tab-panel active" role="tabpanel" aria-labelledby="paletteTab">
+      <div class="workspace">
+        <div>
+          <div id="paletteGrid" class="palette-grid" aria-live="polite"></div>
+          <div id="emptyState" class="empty" hidden>No palettes available.</div>
+        </div>
+
+        <aside class="side">
+          <section class="selection" aria-labelledby="selectionTitle">
+            <div class="panel-title">
+              <h2 id="selectionTitle">Active Palette</h2>
+              <button id="copySelectedBtn" class="btn" type="button" title="Copy selected palette as Markdown">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                Copy
+              </button>
+            </div>
+            <div id="preview" class="preview"></div>
+            <textarea id="markdownOutput" class="markdown-output" readonly aria-label="Selected palettes as Markdown"></textarea>
+            <p id="copyStatus" class="status" aria-live="polite"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="workloadPanel" class="tab-panel" role="tabpanel" aria-labelledby="workloadTab" hidden>
+      <div class="workspace">
+        <section class="selection architecture-form" aria-labelledby="workloadTitle">
+          <div class="panel-title">
+            <h2 id="workloadTitle">Workload Inputs</h2>
+            <button id="copyArchitectureBtn" class="btn" type="button" title="Copy workload inputs as Markdown">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <fieldset class="field full source-field">
+              <legend>Data Sources</legend>
+              <button id="resetSourcesBtn" class="btn ghost source-reset" type="button">Reset</button>
+              <div class="checkbox-grid">
+                <label class="choice"><input type="checkbox" name="source" value="Salesforce"> Salesforce</label>
+                <label class="choice"><input type="checkbox" name="source" value="Odoo"> Odoo</label>
+                <label class="choice"><input type="checkbox" name="source" value="Flat files"> Flat files</label>
+                <label class="choice"><input type="checkbox" name="source" value="Google Analytics"> Google Analytics</label>
+                <label class="choice"><input id="rdbmsSourceToggle" type="checkbox" name="source" value="RDBMS"> RDBMS</label>
+                <label class="choice"><input type="checkbox" name="source" value="BigQuery"> BigQuery</label>
+                <label class="choice"><input type="checkbox" name="source" value="Redshift"> Redshift</label>
+                <label class="choice"><input type="checkbox" name="source" value="APIs"> APIs</label>
+                <label class="choice"><input type="checkbox" name="source" value="Kafka"> Kafka</label>
+                <label class="choice"><input type="checkbox" name="source" value="Kinesis"> Kinesis</label>
+                <label class="choice"><input type="checkbox" name="source" value="Pub/Sub"> Pub/Sub</label>
+                <label class="choice"><input type="checkbox" name="source" value="Snowflake"> Snowflake</label>
+                <label class="choice"><input type="checkbox" name="source" value="Databricks"> Databricks</label>
+                <label class="choice"><input id="customSourceToggle" type="checkbox" name="source" value="Custom"> Custom</label>
+              </div>
+              <div id="rdbmsTypeGroup" class="detail-field" hidden>
+                <label for="rdbmsTypeInput">RDBMS Type</label>
+                <input id="rdbmsTypeInput" class="text-input custom-source" type="text" placeholder="PostgreSQL, MSSQL, MySQL, Oracle">
+              </div>
+              <input id="customSourceInput" class="text-input custom-source" type="text" placeholder="Custom source name" hidden>
+            </fieldset>
+
+            <div class="field">
+              <label for="totalVolume">Total Data Volume</label>
+              <div class="input-row">
+                <input id="totalVolume" class="number-input" type="number" min="0" step="1" value="2">
+                <div class="segmented" role="group" aria-label="Total data volume unit">
+                  <button class="segment active" type="button" data-volume-unit="GB">GB</button>
+                  <button class="segment" type="button" data-volume-unit="TB">TB</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="dailyVolume">Daily Volume</label>
+              <div class="input-row">
+                <input id="dailyVolume" class="number-input" type="number" min="0" step="1" value="500000">
+                <div class="segmented" role="group" aria-label="Daily volume unit">
+                  <button class="segment active" type="button" data-daily-unit="Rows">Rows</button>
+                  <button class="segment" type="button" data-daily-unit="GB">GB</button>
+                </div>
+              </div>
+            </div>
+
+            <fieldset class="field">
+              <legend>Load Type From Source</legend>
+              <div class="segmented wide" role="group" aria-label="Load type from source">
+                <button class="segment active" type="button" data-load-type="Full">Full</button>
+                <button class="segment" type="button" data-load-type="Incremental">Incremental</button>
+                <button class="segment" type="button" data-load-type="CDC">CDC</button>
+              </div>
+            </fieldset>
+
+            <div class="field range-field">
+              <label for="streamingMix">Workload Mix</label>
+              <input id="streamingMix" type="range" min="0" max="100" step="5" value="35">
+              <div class="range-readout">
+                <span id="streamingValue">Streaming 35%</span>
+                <span id="batchValue">Batch 65%</span>
+              </div>
+            </div>
+
+            <fieldset class="field">
+              <legend>Line Animation</legend>
+              <label class="toggle-row">
+                <input id="lineAnimation" type="checkbox" checked>
+                <span>Animated lines</span>
+              </label>
+            </fieldset>
+          </div>
+        </section>
+
+        <aside class="side">
+          <section class="selection" aria-labelledby="workloadMarkdownTitle">
+            <div class="panel-title">
+              <h2 id="workloadMarkdownTitle">Workload Markdown</h2>
+            </div>
+            <textarea id="architectureOutput" class="markdown-output" readonly aria-label="Workload inputs as Markdown"></textarea>
+            <p id="architectureStatus" class="status" aria-live="polite"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="targetPlatformPanel" class="tab-panel" role="tabpanel" aria-labelledby="targetPlatformTab" hidden>
+      <div class="workspace">
+        <section class="selection architecture-form" aria-labelledby="targetPlatformTitle">
+          <div class="panel-title">
+            <h2 id="targetPlatformTitle">Target Platform</h2>
+            <button id="copyTargetPlatformBtn" class="btn" type="button" title="Copy target platform as Markdown">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <fieldset class="field">
+              <legend>Target Cloud</legend>
+              <div class="segmented wide" role="group" aria-label="Target cloud">
+                <button class="segment active" type="button" data-target-cloud="AWS">AWS</button>
+                <button class="segment" type="button" data-target-cloud="GCP">GCP</button>
+                <button class="segment" type="button" data-target-cloud="Azure">Azure</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="field">
+              <legend>Data Platform</legend>
+              <div class="segmented wide" role="group" aria-label="Data platform">
+                <button class="segment active" type="button" data-data-platform="None">None</button>
+                <button class="segment" type="button" data-data-platform="Databricks">Databricks</button>
+                <button class="segment" type="button" data-data-platform="Snowflake">Snowflake</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="field full">
+              <legend>ETL Tool</legend>
+              <div class="checkbox-grid">
+                <label class="choice"><input type="checkbox" name="etlTool" value="Glue"> Glue</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="EMR"> EMR</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="AppFlow"> AppFlow</label>
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <label for="storageOutput">Storage</label>
+              <div id="storageOutput" class="readonly-value">S3</div>
+            </div>
+
+            <fieldset class="field">
+              <legend>Table Formats</legend>
+              <div class="checkbox-grid compact">
+                <label class="choice"><input type="checkbox" name="tableFormat" value="Iceberg"> Iceberg</label>
+                <label class="choice"><input type="checkbox" name="tableFormat" value="Delta Lake"> Delta Lake</label>
+                <label class="choice"><input type="checkbox" name="tableFormat" value="Hudi"> Hudi</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="field full">
+              <legend>Catalog</legend>
+              <div class="segmented four" role="group" aria-label="Catalog">
+                <button class="segment active" type="button" data-catalog="None">None</button>
+                <button class="segment" type="button" data-catalog="Glue Data Catalog">Glue Data Catalog</button>
+                <button class="segment" type="button" data-catalog="Unity Catalog">Unity Catalog</button>
+                <button class="segment" type="button" data-catalog="Snowflake Horizon Catalog">Snowflake Horizon Catalog</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="field full">
+              <legend>Consumption Layer</legend>
+              <div class="checkbox-grid">
+                <label class="choice"><input type="checkbox" name="consumptionLayer" value="Tableau"> Tableau</label>
+                <label class="choice"><input type="checkbox" name="consumptionLayer" value="PowerBI"> PowerBI</label>
+                <label class="choice"><input type="checkbox" name="consumptionLayer" value="Databricks Genie"> Databricks Genie</label>
+              </div>
+            </fieldset>
+          </div>
+        </section>
+
+        <aside class="side">
+          <section class="selection" aria-labelledby="targetPlatformMarkdownTitle">
+            <div class="panel-title">
+              <h2 id="targetPlatformMarkdownTitle">Target Markdown</h2>
+            </div>
+            <textarea id="targetPlatformOutput" class="markdown-output" readonly aria-label="Target platform as Markdown"></textarea>
+            <p id="targetPlatformStatus" class="status" aria-live="polite"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="diagramGuidePanel" class="tab-panel" role="tabpanel" aria-labelledby="diagramGuideTab" hidden>
+      <section class="selection guide-panel" aria-labelledby="diagramGuideTitle">
+        <div class="panel-title">
+          <h2 id="diagramGuideTitle">Architecture Diagram Skill</h2>
+          <button id="copyDiagramGuideBtn" class="btn" type="button" title="Copy architecture diagram guide">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre class="code-viewer"><code id="diagramGuideCode"></code></pre>
+        <p id="diagramGuideStatus" class="status" aria-live="polite"></p>
+      </section>
+    </section>
+  </main>
+
+  <script type="text/plain" id="diagramGuideSource">
+# Architecture Diagram Guide
+
+Create professional technical architecture diagrams as self-contained HTML files with inline SVG graphics and CSS styling.
+
+### Typography
+
+Use SF Mono for all text
+
+Font sizes: 14px for component names, 11px for sublabels, 10px for annotations, 9px (Strictly Uppercase)
+
+## Logo usage
+1. ONLY use icons for Components when provided\available
+2. Do not create mockup logos
+
+### Legend Placement
+
+**CRITICAL:** Place legends OUTSIDE all boundary boxes (region boundaries, cluster boundaries, security groups).
+
+- Calculate where all boundaries end (y position + height)
+- Place legend at least 20px below the lowest boundary
+- Expand SVG viewBox height if needed to accommodate
+
+**Example:**
+```
+Kubernetes Cluster: y=30, height=460 → ends at y=490
+Legend should start at: y=510 or below
+SVG viewBox height: at least 560 to fit legend
+```
+
+**Wrong:** Legend at y=470 inside a cluster boundary that ends at y=490
+**Right:** Legend at y=510, below the cluster boundary, with viewBox height extended
+
+### Export Toolbar (built-in)
+
+Every diagram ships with a single unobtrusive `⋯` toggle in the header. Click it to reveal three buttons — 📋 Copy (high-DPI PNG to clipboard, scale: 2), 🖼️ PNG (high-DPI PNG download), 📄 PDF (PNG embedded in a one-page PDF via jsPDF). The toolbar collapses back to the icon by default so it doesn't clutter the diagram. All three formats use the same html2canvas capture (with the toolbar excluded and 32px padding around the content), so PDF preserves the dark theme without going through the browser's print dialog.
+
+When generating a new diagram, keep these intact in the template:
+- The two CDN scripts in `<head>` (pinned versions, with Subresource Integrity hashes and `crossorigin="anonymous"`):
+  - `https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js` — `integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"`
+  - `https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js` — `integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/"`
+  - SRI ensures generated diagrams are tamper-resistant against CDN compromise. Do not modify the hashes; if the version is bumped, the new hash must be computed fresh.
+- `id="report-container"` on the outermost `.container` div (this is what gets captured)
+- `.toolbar` markup with `.toolbar-actions` (collapsed by default) and `.toolbar-toggle` (the `⋯` button)
+- `.toolbar` CSS + `@media print { .toolbar { display: none !important; } }`
+- `copyAsImage()`, `downloadPNG()`, and `downloadPDF()` script before `</body>`, all using `getBoundingClientRect()` + `html2canvas(document.body, { x, y, width, height, ignoreElements })` to capture a precise rect with breathing room and no toolbar
+
+Caveats: clipboard API needs a user gesture and a secure context (https/file/localhost). SVG `<foreignObject>` renders inconsistently in html2canvas — stick to plain `<svg>` shapes and `<text>`. Bump `scale: 2` to `3` or `4` for higher-res output.
+
+## Output
+
+Always produce a single self-contained `.html` file with:
+- Embedded CSS (no external stylesheets except Google Fonts)
+- Inline SVG (no external images)
+- No JavaScript required (pure CSS animations)
+
+The file should render correctly when opened directly in any modern browser. The export toolbar uses two CDN scripts (html2canvas and jsPDF) — no other JavaScript dependencies.
+  </script>
+
+  <script>
+    const DEFAULT_MARKDOWN = `## Organization
+
+Primary:
+Accent:
+
+## Databricks
+
+Primary:
+Accent:
+| Company | Primary | Accent | Font
+| --- | --- | --- |---  |
+| Organization | #1701D0 | #F36A10 | Inter |
+| Databricks | #FF3621 | #1B3139 | DM Sans |
+| AWS | #FF9900 | #252F3E | Amazon Ember |
+| Snowflake | #29B5E8 | #000000 | Lato |
+| Anthropic | #D97757 | #6A9BCC | Poppins | `;
+
+    const elements = {
+      totalCount: document.querySelector("#totalCount"),
+      selectedCount: document.querySelector("#selectedCount"),
+      copyAllBtn: document.querySelector("#copyAllBtn"),
+      copyAllStatus: document.querySelector("#copyAllStatus"),
+      tabButtons: document.querySelectorAll(".tab-button"),
+      tabPanels: document.querySelectorAll(".tab-panel"),
+      paletteGrid: document.querySelector("#paletteGrid"),
+      emptyState: document.querySelector("#emptyState"),
+      preview: document.querySelector("#preview"),
+      markdownOutput: document.querySelector("#markdownOutput"),
+      copySelectedBtn: document.querySelector("#copySelectedBtn"),
+      copyStatus: document.querySelector("#copyStatus"),
+      sourceInputs: document.querySelectorAll('input[name="source"]'),
+      customSourceToggle: document.querySelector("#customSourceToggle"),
+      customSourceInput: document.querySelector("#customSourceInput"),
+      rdbmsSourceToggle: document.querySelector("#rdbmsSourceToggle"),
+      rdbmsTypeGroup: document.querySelector("#rdbmsTypeGroup"),
+      rdbmsTypeInput: document.querySelector("#rdbmsTypeInput"),
+      resetSourcesBtn: document.querySelector("#resetSourcesBtn"),
+      totalVolume: document.querySelector("#totalVolume"),
+      totalVolumeUnits: document.querySelectorAll("[data-volume-unit]"),
+      dailyVolume: document.querySelector("#dailyVolume"),
+      dailyVolumeUnits: document.querySelectorAll("[data-daily-unit]"),
+      loadTypeButtons: document.querySelectorAll("[data-load-type]"),
+      streamingMix: document.querySelector("#streamingMix"),
+      streamingValue: document.querySelector("#streamingValue"),
+      batchValue: document.querySelector("#batchValue"),
+      lineAnimation: document.querySelector("#lineAnimation"),
+      architectureOutput: document.querySelector("#architectureOutput"),
+      copyArchitectureBtn: document.querySelector("#copyArchitectureBtn"),
+      architectureStatus: document.querySelector("#architectureStatus"),
+      targetCloudButtons: document.querySelectorAll("[data-target-cloud]"),
+      dataPlatformButtons: document.querySelectorAll("[data-data-platform]"),
+      etlToolInputs: document.querySelectorAll('input[name="etlTool"]'),
+      storageOutput: document.querySelector("#storageOutput"),
+      tableFormatInputs: document.querySelectorAll('input[name="tableFormat"]'),
+      catalogButtons: document.querySelectorAll("[data-catalog]"),
+      consumptionLayerInputs: document.querySelectorAll('input[name="consumptionLayer"]'),
+      targetPlatformOutput: document.querySelector("#targetPlatformOutput"),
+      copyTargetPlatformBtn: document.querySelector("#copyTargetPlatformBtn"),
+      targetPlatformStatus: document.querySelector("#targetPlatformStatus"),
+      diagramGuideSource: document.querySelector("#diagramGuideSource"),
+      diagramGuideCode: document.querySelector("#diagramGuideCode"),
+      copyDiagramGuideBtn: document.querySelector("#copyDiagramGuideBtn"),
+      diagramGuideStatus: document.querySelector("#diagramGuideStatus"),
+    };
+
+    let palettes = [];
+    let selectedId = "";
+    const architectureState = {
+      sources: [],
+      customSource: "",
+      rdbmsType: "",
+      totalVolume: "2",
+      totalVolumeUnit: "GB",
+      dailyVolume: "500000",
+      dailyVolumeUnit: "Rows",
+      loadType: "Full",
+      streamingPercent: 35,
+      lineAnimation: true,
+    };
+    const targetPlatformState = {
+      cloud: "AWS",
+      dataPlatform: "None",
+      etlTools: [],
+      tableFormats: [],
+      catalog: "None",
+      consumptionLayers: [],
+    };
+    const DIAGRAM_GUIDE_MARKDOWN = elements.diagramGuideSource.textContent.trim();
+
+    function normalizeHex(value) {
+      const clean = String(value || "").trim();
+      return /^#[0-9a-f]{6}$/i.test(clean) ? clean.toUpperCase() : "";
+    }
+
+    function contrastInk(hex) {
+      const clean = normalizeHex(hex);
+      if (!clean) return "#151235";
+
+      const [r, g, b] = clean
+        .slice(1)
+        .match(/.{2}/g)
+        .map((channel) => parseInt(channel, 16) / 255)
+        .map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.47 ? "#151235" : "#FFFFFF";
+    }
+
+    function parseMarkdownTable(markdown) {
+      const rows = String(markdown || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith("|") && line.endsWith("|"));
+
+      const dataRows = rows.filter((line) => {
+        const compact = line.replace(/\s/g, "");
+        return !compact.includes("---") && !compact.toLowerCase().includes("|company|primary|accent|");
+      });
+
+      return dataRows
+        .map((line) => line.slice(1, -1).split("|").map((cell) => cell.trim()))
+        .map(([company, primary, accent, font]) => ({
+          id: `${company}-${primary}-${accent}-${font || ""}`.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          company,
+          primary: normalizeHex(primary),
+          accent: normalizeHex(accent),
+          font: font || "",
+        }))
+        .filter((palette) => palette.company && palette.primary && palette.accent);
+    }
+
+    function toMarkdown(items) {
+      const header = ["Field", ...items.map((item) => item.company)];
+      const divider = header.map(() => "---");
+      const rows = [
+        ["Primary", ...items.map((item) => item.primary)],
+        ["Accent", ...items.map((item) => item.accent)],
+        ["Font", ...items.map((item) => item.font || "")],
+      ];
+
+      return [header, divider, ...rows]
+        .map((row) => `| ${row.join(" | ")} |`)
+        .join("\n");
+    }
+
+    function selectedPalettes() {
+      const active = palettes.find((item) => item.id === selectedId);
+      return active ? [active] : [];
+    }
+
+    function selectedPaletteMarkdown() {
+      const items = selectedPalettes();
+      return items.length ? toMarkdown(items) : "No palette selected.";
+    }
+
+    function buttonIcon(path) {
+      return `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
+    }
+
+    function renderGrid() {
+      const items = palettes;
+      elements.paletteGrid.innerHTML = "";
+      elements.emptyState.hidden = items.length > 0;
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((item) => {
+        const card = document.createElement("button");
+        card.className = `palette${selectedId === item.id ? " selected" : ""}`;
+        card.type = "button";
+        card.setAttribute("aria-pressed", selectedId === item.id ? "true" : "false");
+        card.dataset.id = item.id;
+        card.innerHTML = `
+          <div class="stripe">
+            <span class="swatch" style="background:${item.primary};color:${contrastInk(item.primary)}">${item.primary}</span>
+            <span class="swatch" style="background:${item.accent};color:${contrastInk(item.accent)}">${item.accent}</span>
+          </div>
+          <div class="palette-body">
+            <div class="palette-head">
+              <div>
+                <h3 class="company">${item.company}</h3>
+                <p class="font">${item.font || "No font listed"}</p>
+              </div>
+              <span class="mini-actions" aria-hidden="true">
+                <span class="btn ghost" title="Copy this palette">${buttonIcon('<path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>')}</span>
+              </span>
+            </div>
+            <div class="meta">
+              <div class="meta-row"><span>Primary</span><span class="chip"><span class="dot" style="background:${item.primary}"></span>${item.primary}</span></div>
+              <div class="meta-row"><span>Accent</span><span class="chip"><span class="dot" style="background:${item.accent}"></span>${item.accent}</span></div>
+            </div>
+          </div>
+        `;
+        fragment.appendChild(card);
+      });
+
+      elements.paletteGrid.appendChild(fragment);
+    }
+
+    function renderSelection() {
+      const items = selectedPalettes();
+      elements.selectedCount.textContent = items.length;
+      elements.totalCount.textContent = palettes.length;
+      elements.copySelectedBtn.disabled = items.length === 0;
+      elements.markdownOutput.value = selectedPaletteMarkdown();
+
+      if (!items.length) {
+        elements.preview.innerHTML = `<div class="empty">Select a palette to build Markdown.</div>`;
+        return;
+      }
+
+      const featured = items[0];
+      elements.preview.innerHTML = `
+        <div class="preview-hero" style="background:${featured.primary};color:${contrastInk(featured.primary)}">
+          <b>${featured.company}</b>
+          <span>${featured.font || "Font not listed"}</span>
+        </div>
+        <div class="preview-band">
+          <div style="background:${featured.accent}"></div>
+          <div style="background:${featured.primary}"></div>
+        </div>
+      `;
+    }
+
+    function render() {
+      renderGrid();
+      renderSelection();
+    }
+
+    function architectureSources() {
+      const sources = architectureState.sources
+        .filter((source) => source !== "Custom" && source !== "RDBMS")
+        .map((source) => source === "APIs" ? "APIs" : source);
+      const rdbms = architectureState.rdbmsType.trim();
+      const custom = architectureState.customSource.trim();
+      if (architectureState.sources.includes("RDBMS")) {
+        sources.push(rdbms ? `RDBMS (${rdbms})` : "RDBMS");
+      }
+      if (architectureState.sources.includes("Custom") && custom) {
+        sources.push(custom);
+      }
+      return sources;
+    }
+
+    function architectureHasInputs() {
+      return architectureSources().length > 0 ||
+        architectureState.totalVolume ||
+        architectureState.dailyVolume ||
+        architectureState.loadType ||
+        architectureState.streamingPercent !== null ||
+        typeof architectureState.lineAnimation === "boolean";
+    }
+
+    function renderArchitectureMarkdown() {
+      if (!architectureHasInputs()) {
+        return "No workload inputs configured.";
+      }
+
+      const streaming = Number(architectureState.streamingPercent);
+      const batch = 100 - streaming;
+      const sources = architectureSources();
+      const rows = [
+        ["Data Sources", sources.length ? sources.join(", ") : "Not specified"],
+        ["Total Data Volume", architectureState.totalVolume ? `${architectureState.totalVolume} ${architectureState.totalVolumeUnit}` : "Not specified"],
+        ["Daily Volume", architectureState.dailyVolume ? `${architectureState.dailyVolume} ${architectureState.dailyVolumeUnit}` : "Not specified"],
+        ["Load Type", architectureState.loadType],
+        ["Workload Mix", `Streaming ${streaming}% / Batch ${batch}%`],
+        ["Line Animation", architectureState.lineAnimation ? "On" : "Off"],
+      ];
+
+      return [
+        "| Field | Value |",
+        "| --- | --- |",
+        ...rows.map((row) => `| ${row[0]} | ${row[1]} |`),
+      ].join("\n");
+    }
+
+    function renderArchitecture() {
+      const streaming = Number(architectureState.streamingPercent);
+      elements.streamingValue.textContent = `Streaming ${streaming}%`;
+      elements.batchValue.textContent = `Batch ${100 - streaming}%`;
+      elements.rdbmsTypeGroup.hidden = !architectureState.sources.includes("RDBMS");
+      elements.customSourceInput.hidden = !architectureState.sources.includes("Custom");
+      elements.architectureOutput.value = renderArchitectureMarkdown();
+    }
+
+    function targetStorageForCloud(cloud) {
+      const storageByCloud = {
+        AWS: "S3",
+        GCP: "Cloud Storage",
+        Azure: "ADLS Gen2",
+      };
+      return storageByCloud[cloud] || "Not specified";
+    }
+
+    function renderTargetPlatformMarkdown() {
+      const rows = [
+        ["Target Cloud", targetPlatformState.cloud],
+        ["Data Platform", targetPlatformState.dataPlatform],
+        ["ETL Tool", targetPlatformState.etlTools.length ? targetPlatformState.etlTools.join(", ") : "None"],
+        ["Storage", targetStorageForCloud(targetPlatformState.cloud)],
+        ["Table Formats", targetPlatformState.tableFormats.length ? targetPlatformState.tableFormats.join(", ") : "None"],
+        ["Catalog", targetPlatformState.catalog],
+        ["Consumption Layer", targetPlatformState.consumptionLayers.length ? targetPlatformState.consumptionLayers.join(", ") : "None"],
+      ];
+
+      return [
+        "| Field | Value |",
+        "| --- | --- |",
+        ...rows.map((row) => `| ${row[0]} | ${row[1]} |`),
+      ].join("\n");
+    }
+
+    function renderTargetPlatform() {
+      elements.storageOutput.textContent = targetStorageForCloud(targetPlatformState.cloud);
+      elements.targetPlatformOutput.value = renderTargetPlatformMarkdown();
+    }
+
+    function renderDiagramGuide() {
+      elements.diagramGuideCode.textContent = DIAGRAM_GUIDE_MARKDOWN;
+    }
+
+    function allMarkdown() {
+      return [
+        "# Architecture Studio Export",
+        "",
+        "## Palette",
+        selectedPaletteMarkdown(),
+        "",
+        "## Workload Inputs",
+        renderArchitectureMarkdown(),
+        "",
+        "## Target Platform",
+        renderTargetPlatformMarkdown(),
+      ].join("\n");
+    }
+
+    async function copyText(text, statusElement) {
+      if (!text.trim()) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const helper = document.createElement("textarea");
+          helper.value = text;
+          helper.style.position = "fixed";
+          helper.style.left = "-999px";
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand("copy");
+          helper.remove();
+        }
+        statusElement.className = "status";
+        statusElement.textContent = "Markdown copied.";
+      } catch (error) {
+        statusElement.className = "status error";
+        statusElement.textContent = "Could not copy automatically. Select the Markdown and copy it manually.";
+      }
+    }
+
+    function applyMarkdown(markdown) {
+      const next = parseMarkdownTable(markdown);
+      if (!next.length) {
+        return;
+      }
+
+      palettes = next;
+      selectedId = next[0].id;
+      elements.copyStatus.textContent = "";
+      render();
+    }
+
+    function setActiveTab(tabId) {
+      elements.tabButtons.forEach((button) => {
+        const active = button.dataset.tab === tabId;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", active ? "true" : "false");
+      });
+
+      elements.tabPanels.forEach((panel) => {
+        const active = panel.id === `${tabId}Panel`;
+        panel.classList.toggle("active", active);
+        panel.hidden = !active;
+      });
+    }
+
+    function syncArchitectureState() {
+      architectureState.sources = Array.from(elements.sourceInputs)
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+      architectureState.customSource = elements.customSourceInput.value;
+      architectureState.rdbmsType = elements.rdbmsTypeInput.value;
+      architectureState.totalVolume = elements.totalVolume.value;
+      architectureState.dailyVolume = elements.dailyVolume.value;
+      architectureState.streamingPercent = Number(elements.streamingMix.value);
+      architectureState.lineAnimation = elements.lineAnimation.checked;
+      renderArchitecture();
+    }
+
+    function syncTargetPlatformState() {
+      targetPlatformState.etlTools = Array.from(elements.etlToolInputs)
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+      targetPlatformState.tableFormats = Array.from(elements.tableFormatInputs)
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+      targetPlatformState.consumptionLayers = Array.from(elements.consumptionLayerInputs)
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+      renderTargetPlatform();
+    }
+
+    function activateSegment(buttons, activeButton) {
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button === activeButton);
+      });
+    }
+
+    function activateSegmentValue(buttons, attribute, value) {
+      buttons.forEach((button) => {
+        button.classList.toggle("active", button.dataset[attribute] === value);
+      });
+    }
+
+    function setTargetCatalog(catalog) {
+      targetPlatformState.catalog = catalog;
+      activateSegmentValue(elements.catalogButtons, "catalog", catalog);
+      renderTargetPlatform();
+    }
+
+    function resetDataSources() {
+      elements.sourceInputs.forEach((input) => {
+        input.checked = false;
+      });
+      elements.customSourceInput.value = "";
+      elements.rdbmsTypeInput.value = "";
+      syncArchitectureState();
+    }
+
+    elements.paletteGrid.addEventListener("click", (event) => {
+      const card = event.target.closest(".palette");
+      if (!card) return;
+      selectedId = card.dataset.id;
+      elements.copyStatus.textContent = "";
+      render();
+    });
+
+    elements.copySelectedBtn.addEventListener("click", () => {
+      copyText(selectedPaletteMarkdown(), elements.copyStatus);
+    });
+
+    elements.markdownOutput.addEventListener("click", () => {
+      elements.markdownOutput.select();
+    });
+
+    elements.tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveTab(button.dataset.tab);
+      });
+    });
+
+    elements.sourceInputs.forEach((input) => {
+      input.addEventListener("change", syncArchitectureState);
+    });
+
+    elements.customSourceInput.addEventListener("input", syncArchitectureState);
+    elements.rdbmsTypeInput.addEventListener("input", syncArchitectureState);
+    elements.resetSourcesBtn.addEventListener("click", resetDataSources);
+    elements.totalVolume.addEventListener("input", syncArchitectureState);
+    elements.dailyVolume.addEventListener("input", syncArchitectureState);
+    elements.streamingMix.addEventListener("input", syncArchitectureState);
+    elements.lineAnimation.addEventListener("change", syncArchitectureState);
+
+    elements.totalVolumeUnits.forEach((button) => {
+      button.addEventListener("click", () => {
+        architectureState.totalVolumeUnit = button.dataset.volumeUnit;
+        activateSegment(elements.totalVolumeUnits, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.dailyVolumeUnits.forEach((button) => {
+      button.addEventListener("click", () => {
+        architectureState.dailyVolumeUnit = button.dataset.dailyUnit;
+        activateSegment(elements.dailyVolumeUnits, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.loadTypeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        architectureState.loadType = button.dataset.loadType;
+        activateSegment(elements.loadTypeButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.copyArchitectureBtn.addEventListener("click", () => {
+      copyText(renderArchitectureMarkdown(), elements.architectureStatus);
+    });
+
+    elements.targetCloudButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        targetPlatformState.cloud = button.dataset.targetCloud;
+        activateSegment(elements.targetCloudButtons, button);
+        renderTargetPlatform();
+      });
+    });
+
+    elements.dataPlatformButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        targetPlatformState.dataPlatform = button.dataset.dataPlatform;
+        activateSegment(elements.dataPlatformButtons, button);
+
+        if (targetPlatformState.dataPlatform === "Snowflake") {
+          setTargetCatalog("Snowflake Horizon Catalog");
+        } else if (targetPlatformState.dataPlatform === "Databricks") {
+          setTargetCatalog("Unity Catalog");
+        } else {
+          setTargetCatalog("None");
+        }
+      });
+    });
+
+    elements.etlToolInputs.forEach((input) => {
+      input.addEventListener("change", syncTargetPlatformState);
+    });
+
+    elements.tableFormatInputs.forEach((input) => {
+      input.addEventListener("change", syncTargetPlatformState);
+    });
+
+    elements.catalogButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setTargetCatalog(button.dataset.catalog);
+      });
+    });
+
+    elements.consumptionLayerInputs.forEach((input) => {
+      input.addEventListener("change", syncTargetPlatformState);
+    });
+
+    elements.copyTargetPlatformBtn.addEventListener("click", () => {
+      copyText(renderTargetPlatformMarkdown(), elements.targetPlatformStatus);
+    });
+
+    elements.targetPlatformOutput.addEventListener("click", () => {
+      elements.targetPlatformOutput.select();
+    });
+
+    elements.copyDiagramGuideBtn.addEventListener("click", () => {
+      copyText(DIAGRAM_GUIDE_MARKDOWN, elements.diagramGuideStatus);
+    });
+
+    elements.copyAllBtn.addEventListener("click", () => {
+      copyText(allMarkdown(), elements.copyAllStatus);
+    });
+
+    elements.architectureOutput.addEventListener("click", () => {
+      elements.architectureOutput.select();
+    });
+
+    async function loadInitialMarkdown() {
+      applyMarkdown(DEFAULT_MARKDOWN);
+
+      if (window.location.protocol === "file:") {
+        return;
+      }
+
+      try {
+        const response = await fetch("Design.md", { cache: "no-store" });
+        if (!response.ok) return;
+        applyMarkdown(await response.text());
+      } catch (error) {
+      }
+    }
+
+    renderArchitecture();
+    renderTargetPlatform();
+    renderDiagramGuide();
+    loadInitialMarkdown();
+  </script>
+</body>
+</html>
