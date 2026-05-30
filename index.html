@@ -270,17 +270,58 @@
   <script type="text/plain" id="diagramGuideSource">
 # Architecture Diagram Guide
 
-Create professional technical architecture diagrams as self-contained HTML files with inline SVG graphics and CSS styling.
+Create professional technical architecture diagrams as self-contained HTML files with SVG graphics and CSS styling.
 
 ### Typography
 
-Use SF Mono for all text
+Use SF Mono if given as part of input
 
 Font sizes: 14px for component names, 11px for sublabels, 10px for annotations, 9px (Strictly Uppercase)
 
 ## Logo usage
-1. ONLY use icons for Components when provided\available
-2. Do not create mockup logos
+Architecture diagram icons are available from the Archicons registry:
+
+https://archicons.oltpdba.workers.dev/registry.json
+
+Use the registry to find icons by `id`, `name`, `provider`, or `category`.
+Each icon entry includes a ready-to-use hosted SVG URL in the `url` field.
+
+When inserting an icon, use the icon's `url` value directly.
+
+Example registry entry:
+
+{
+  "id": "azure.azure-sql",
+  "name": "Azure SQL",
+  "provider": "Microsoft Azure",
+  "category": "azure",
+  "path": "icons/azure/azure-sql.svg",
+  "url": "https://archicons.oltpdba.workers.dev/icons/azure/azure-sql.svg"
+}
+
+Only use an icon if the logo is available in the registry. Do not create custom or mock logos.
+
+Use hosted SVG icons as SVG image references:
+
+```html
+<image href="https://archicons.oltpdba.workers.dev/icons/aws/aws-glue.svg" x="18" y="16" width="28" height="28" preserveAspectRatio="xMidYMid meet"></image>
+```
+
+Keep `useCORS: true` in html2canvas captures so CDN-hosted icons can render in exports.
+
+### Workload Inputs Placement
+
+Prefer summarizing workload inputs in the page header/subtitle and design notes instead of adding a large top badge inside the SVG.
+
+If workload inputs must appear inside the SVG:
+- Place the workload summary outside all platform, region, cluster, and security boundaries
+- Prefer a compact footer strip below the lowest boundary and above the legend, or place it below the legend if space is tight
+- Leave at least 16px vertical clearance from every boundary line and flow arrow
+- Expand the SVG viewBox height if needed
+- Skip repeated workload detail when the header already includes volume, cadence, load type, and batch/streaming mix
+
+**Wrong:** Workload badge at `y=24..68` while a platform boundary starts at `y=58`
+**Right:** No workload badge, or a compact workload strip below the lowest boundary with clear vertical separation
 
 ### Legend Placement
 
@@ -320,7 +361,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
-- Inline SVG (no external images)
+- Inline SVG shapes and optional Archicons CDN SVG `<image>` references only
 - No JavaScript required (pure CSS animations)
 
 The file should render correctly when opened directly in any modern browser. The export toolbar uses two CDN scripts (html2canvas and jsPDF) — no other JavaScript dependencies.
