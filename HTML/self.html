@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self Quick Reference</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --brand: #ff3621;
+      --brand-deep: #1b3139;
+      --bg: #071013;
+      --panel: #0f1d22;
+      --panel-soft: #13272e;
+      --text: #f7f2ef;
+      --muted: #a7b3b7;
+      --line: #284047;
+      --success: #7dd3a8;
+      font-family: "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(255, 54, 33, 0.22), transparent 28rem),
+        linear-gradient(135deg, #071013 0%, #0b171b 52%, #101b1f 100%);
+      color: var(--text);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      color: var(--brand);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 5vw, 3rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .copy-all {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 54, 33, 0.55);
+      border-radius: 8px;
+      background: var(--brand);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0 14px;
+      white-space: nowrap;
+    }
+
+    .shell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(15, 29, 34, 0.92);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      overflow: hidden;
+    }
+
+    .shell-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(27, 49, 57, 0.78);
+      padding: 12px 14px;
+    }
+
+    .shell-title {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--success);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .reference {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(140px, 0.34fr) minmax(0, 1fr) auto;
+      gap: 0;
+      align-items: stretch;
+      background: var(--panel);
+    }
+
+    .label,
+    .value,
+    .action {
+      padding: 15px 16px;
+    }
+
+    .label {
+      display: flex;
+      align-items: center;
+      color: #ffffff;
+      font-weight: 850;
+      background: rgba(255, 54, 33, 0.08);
+    }
+
+    .value {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      color: var(--text);
+      font-size: 1.02rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-soft);
+    }
+
+    .copy {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0b171b;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .copy:hover,
+    .copy:focus-visible {
+      border-color: var(--brand);
+      color: var(--brand);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .copy svg,
+    .copy-all svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .raw {
+      margin: 0;
+      border-top: 1px solid var(--line);
+      background: #091316;
+      color: #d7e2e5;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      padding: 16px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .copy-all {
+        width: 100%;
+      }
+
+      .row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .label {
+        grid-column: 1 / -1;
+        padding-bottom: 6px;
+      }
+
+      .value,
+      .action {
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand-text">
+        <p class="eyebrow">Quick Reference</p>
+        <h1>Self</h1>
+      </div>
+      <button class="copy-all" type="button" data-copy-all aria-label="Copy all reference values">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+        </svg>
+        Copy all
+      </button>
+    </header>
+
+    <section class="shell" aria-labelledby="reference-title">
+      <div class="shell-head">
+        <div class="shell-title" id="reference-title">Ready to copy</div>
+        <div class="status" role="status" aria-live="polite" data-status></div>
+      </div>
+
+      <div class="reference">
+        <div class="row">
+          <div class="label">Email</div>
+          <div class="value" data-label="Email" data-value="example@example.com">example@example.com</div>
+          <div class="action">
+            <button class="copy" type="button" data-copy="example@example.com" aria-label="Copy email">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="label">Phone</div>
+          <div class="value" data-label="Phone" data-value="+91-9999999999">+91-9999999999</div>
+          <div class="action">
+            <button class="copy" type="button" data-copy="+91-9999999999" aria-label="Copy phone">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="label">LinkedIn</div>
+          <div class="value" data-label="LinkedIn" data-value="https://www.linkedin.com/in/your-profile">https://www.linkedin.com/in/your-profile</div>
+          <div class="action">
+            <button class="copy" type="button" data-copy="https://www.linkedin.com/in/your-profile" aria-label="Copy LinkedIn URL">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="label">Out of Office msg</div>
+          <div class="value" data-label="Out of Office msg" data-value="I am currently away and will respond as soon as possible.">I am currently away and will respond as soon as possible.</div>
+          <div class="action">
+            <button class="copy" type="button" data-copy="I am currently away and will respond as soon as possible." aria-label="Copy out of office message">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <pre class="raw" aria-label="Plain text quick reference">Email: example@example.com
+Phone: +91-9999999999
+LinkedIn: https://www.linkedin.com/in/your-profile
+Out of Office msg: I am currently away and will respond as soon as possible.</pre>
+    </section>
+  </main>
+
+  <script>
+    const status = document.querySelector("[data-status]");
+    let statusTimer;
+
+    function setStatus(message) {
+      status.textContent = message;
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => {
+        status.textContent = "";
+      }, 1800);
+    }
+
+    async function copyText(text, label) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          textArea.setAttribute("readonly", "");
+          textArea.style.position = "fixed";
+          textArea.style.opacity = "0";
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand("copy");
+          textArea.remove();
+        }
+        setStatus(`${label} copied`);
+      } catch (error) {
+        setStatus("Copy failed");
+      }
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", () => {
+        copyText(button.dataset.copy, "Value");
+      });
+    });
+
+    document.querySelector("[data-copy-all]").addEventListener("click", () => {
+      const allText = [...document.querySelectorAll("[data-value]")]
+        .map((item) => `${item.dataset.label}: ${item.dataset.value}`)
+        .join("\n");
+      copyText(allText, "All values");
+    });
+  </script>
+</body>
+</html>

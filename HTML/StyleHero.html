@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Hero Palette Picker</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand-primary: #1701D0;
+      --brand-accent: #F36A10;
+      --ink: #151235;
+      --muted: #5d5a72;
+      --line: #ddd9ea;
+      --panel: #ffffff;
+      --canvas: #f8f6ff;
+      --soft: #f0edff;
+      --active: var(--brand-primary);
+      --active-ink: #ffffff;
+      --danger: #b42318;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(23, 1, 208, 0.11), transparent 34%),
+        linear-gradient(315deg, rgba(243, 106, 16, 0.14), transparent 30%),
+        var(--canvas);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 32px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      color: var(--active);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 6px 0 6px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+
+    .stat {
+      min-width: 104px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .stat b {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .selection {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(16px);
+    }
+
+    textarea:focus {
+      border-color: var(--active);
+      box-shadow: 0 0 0 3px rgba(23, 1, 208, 0.13);
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      padding: 0 13px;
+      background: var(--active);
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #100096;
+    }
+
+    .btn.secondary {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    .btn.ghost {
+      min-height: 34px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      padding: 0 9px;
+    }
+
+    .btn.ghost:hover {
+      border-color: var(--line);
+      color: var(--ink);
+      background: var(--soft);
+    }
+
+    .btn.secondary:hover,
+    .btn.ghost:hover {
+      background: var(--soft);
+    }
+
+    .icon {
+      width: 1.05em;
+      height: 1.05em;
+      flex: 0 0 auto;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .palette {
+      min-height: 176px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+      text-align: left;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .palette:hover {
+      transform: translateY(-2px);
+      border-color: rgba(23, 1, 208, 0.34);
+      box-shadow: 0 18px 38px rgba(23, 1, 208, 0.12);
+    }
+
+    .palette.selected {
+      border-color: var(--active);
+      box-shadow: 0 0 0 3px rgba(23, 1, 208, 0.16);
+    }
+
+    .stripe {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 82px;
+    }
+
+    .swatch {
+      display: flex;
+      align-items: end;
+      padding: 9px;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.42);
+    }
+
+    .palette-body {
+      padding: 12px;
+    }
+
+    .palette-head {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: start;
+    }
+
+    .company {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.15;
+    }
+
+    .font {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .mini-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 6px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      background: var(--soft);
+      padding: 4px 8px;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      overflow-wrap: anywhere;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      border-radius: 50%;
+    }
+
+    .side {
+      display: grid;
+      gap: 12px;
+      position: sticky;
+      top: 10px;
+    }
+
+    .selection {
+      padding: 14px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .preview {
+      min-height: 170px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      margin-bottom: 12px;
+    }
+
+    .preview-hero {
+      display: flex;
+      min-height: 122px;
+      flex-direction: column;
+      justify-content: end;
+      padding: 14px;
+      color: #fff;
+    }
+
+    .preview-hero b {
+      display: block;
+      font-size: 1.45rem;
+      line-height: 1.05;
+    }
+
+    .preview-hero span {
+      margin-top: 5px;
+      font-size: 0.82rem;
+      opacity: 0.86;
+    }
+
+    .preview-band {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 48px;
+    }
+
+    .empty {
+      display: grid;
+      min-height: 230px;
+      place-items: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      text-align: center;
+      padding: 18px;
+    }
+
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      outline: none;
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .status {
+      min-height: 20px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .markdown-output {
+      margin-top: 10px;
+    }
+
+    @media (max-width: 880px) {
+      .topbar,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        justify-content: start;
+      }
+
+      .side {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Markdown palette companion</div>
+        <h1>Style Hero</h1>
+        <p class="intro">Select a brand palette from <strong>Design.md</strong>, preview the pairing, and copy a clean transposed Markdown table for docs, prompts, or design notes.</p>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat">
+          <b id="totalCount">0</b>
+          <span>Palettes</span>
+        </div>
+        <div class="stat">
+          <b id="selectedCount">0</b>
+          <span>Active</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <div>
+        <div id="paletteGrid" class="palette-grid" aria-live="polite"></div>
+        <div id="emptyState" class="empty" hidden>No palettes available.</div>
+      </div>
+
+      <aside class="side">
+        <section class="selection" aria-labelledby="selectionTitle">
+          <div class="panel-title">
+            <h2 id="selectionTitle">Active Palette</h2>
+            <button id="copySelectedBtn" class="btn" type="button" title="Copy selected palette as Markdown">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+              Copy
+            </button>
+          </div>
+          <div id="preview" class="preview"></div>
+          <textarea id="markdownOutput" class="markdown-output" readonly aria-label="Selected palettes as Markdown"></textarea>
+          <p id="copyStatus" class="status" aria-live="polite"></p>
+        </section>
+
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const DEFAULT_MARKDOWN = `## Organization
+
+Primary:
+Accent:
+
+## Databricks
+
+Primary:
+Accent:
+| Company | Primary | Accent | Font
+| --- | --- | --- |---  |
+| Organization | #1701D0 | #F36A10 | Inter |
+| Databricks | #FF3621 | #1B3139 | DM Sans |
+| AWS | #FF9900 | #252F3E | Amazon Ember |
+| Snowflake | #29B5E8 | #000000 | Lato |
+| Anthropic | #D97757 | #6A9BCC | Poppins | `;
+
+    const elements = {
+      totalCount: document.querySelector("#totalCount"),
+      selectedCount: document.querySelector("#selectedCount"),
+      paletteGrid: document.querySelector("#paletteGrid"),
+      emptyState: document.querySelector("#emptyState"),
+      preview: document.querySelector("#preview"),
+      markdownOutput: document.querySelector("#markdownOutput"),
+      copySelectedBtn: document.querySelector("#copySelectedBtn"),
+      copyStatus: document.querySelector("#copyStatus"),
+    };
+
+    let palettes = [];
+    let selectedId = "";
+
+    function normalizeHex(value) {
+      const clean = String(value || "").trim();
+      return /^#[0-9a-f]{6}$/i.test(clean) ? clean.toUpperCase() : "";
+    }
+
+    function contrastInk(hex) {
+      const clean = normalizeHex(hex);
+      if (!clean) return "#151235";
+
+      const [r, g, b] = clean
+        .slice(1)
+        .match(/.{2}/g)
+        .map((channel) => parseInt(channel, 16) / 255)
+        .map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.47 ? "#151235" : "#FFFFFF";
+    }
+
+    function parseMarkdownTable(markdown) {
+      const rows = String(markdown || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith("|") && line.endsWith("|"));
+
+      const dataRows = rows.filter((line) => {
+        const compact = line.replace(/\s/g, "");
+        return !compact.includes("---") && !compact.toLowerCase().includes("|company|primary|accent|");
+      });
+
+      return dataRows
+        .map((line) => line.slice(1, -1).split("|").map((cell) => cell.trim()))
+        .map(([company, primary, accent, font]) => ({
+          id: `${company}-${primary}-${accent}-${font || ""}`.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          company,
+          primary: normalizeHex(primary),
+          accent: normalizeHex(accent),
+          font: font || "",
+        }))
+        .filter((palette) => palette.company && palette.primary && palette.accent);
+    }
+
+    function toMarkdown(items) {
+      const header = ["Field", ...items.map((item) => item.company)];
+      const divider = header.map(() => "---");
+      const rows = [
+        ["Primary", ...items.map((item) => item.primary)],
+        ["Accent", ...items.map((item) => item.accent)],
+        ["Font", ...items.map((item) => item.font || "")],
+      ];
+
+      return [header, divider, ...rows]
+        .map((row) => `| ${row.join(" | ")} |`)
+        .join("\n");
+    }
+
+    function selectedPalettes() {
+      const active = palettes.find((item) => item.id === selectedId);
+      return active ? [active] : [];
+    }
+
+    function buttonIcon(path) {
+      return `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
+    }
+
+    function renderGrid() {
+      const items = palettes;
+      elements.paletteGrid.innerHTML = "";
+      elements.emptyState.hidden = items.length > 0;
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((item) => {
+        const card = document.createElement("button");
+        card.className = `palette${selectedId === item.id ? " selected" : ""}`;
+        card.type = "button";
+        card.setAttribute("aria-pressed", selectedId === item.id ? "true" : "false");
+        card.dataset.id = item.id;
+        card.innerHTML = `
+          <div class="stripe">
+            <span class="swatch" style="background:${item.primary};color:${contrastInk(item.primary)}">${item.primary}</span>
+            <span class="swatch" style="background:${item.accent};color:${contrastInk(item.accent)}">${item.accent}</span>
+          </div>
+          <div class="palette-body">
+            <div class="palette-head">
+              <div>
+                <h3 class="company">${item.company}</h3>
+                <p class="font">${item.font || "No font listed"}</p>
+              </div>
+              <span class="mini-actions" aria-hidden="true">
+                <span class="btn ghost" title="Copy this palette">${buttonIcon('<path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>')}</span>
+              </span>
+            </div>
+            <div class="meta">
+              <div class="meta-row"><span>Primary</span><span class="chip"><span class="dot" style="background:${item.primary}"></span>${item.primary}</span></div>
+              <div class="meta-row"><span>Accent</span><span class="chip"><span class="dot" style="background:${item.accent}"></span>${item.accent}</span></div>
+            </div>
+          </div>
+        `;
+        fragment.appendChild(card);
+      });
+
+      elements.paletteGrid.appendChild(fragment);
+    }
+
+    function renderSelection() {
+      const items = selectedPalettes();
+      elements.selectedCount.textContent = items.length;
+      elements.totalCount.textContent = palettes.length;
+      elements.copySelectedBtn.disabled = items.length === 0;
+      elements.markdownOutput.value = items.length ? toMarkdown(items) : "";
+
+      if (!items.length) {
+        elements.preview.innerHTML = `<div class="empty">Select a palette to build Markdown.</div>`;
+        return;
+      }
+
+      const featured = items[0];
+      elements.preview.innerHTML = `
+        <div class="preview-hero" style="background:${featured.primary};color:${contrastInk(featured.primary)}">
+          <b>${featured.company}</b>
+          <span>${featured.font || "Font not listed"}</span>
+        </div>
+        <div class="preview-band">
+          <div style="background:${featured.accent}"></div>
+          <div style="background:${featured.primary}"></div>
+        </div>
+      `;
+    }
+
+    function render() {
+      renderGrid();
+      renderSelection();
+    }
+
+    async function copyText(text, statusElement) {
+      if (!text.trim()) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const helper = document.createElement("textarea");
+          helper.value = text;
+          helper.style.position = "fixed";
+          helper.style.left = "-999px";
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand("copy");
+          helper.remove();
+        }
+        statusElement.className = "status";
+        statusElement.textContent = "Markdown copied.";
+      } catch (error) {
+        statusElement.className = "status error";
+        statusElement.textContent = "Could not copy automatically. Select the Markdown and copy it manually.";
+      }
+    }
+
+    function applyMarkdown(markdown) {
+      const next = parseMarkdownTable(markdown);
+      if (!next.length) {
+        return;
+      }
+
+      palettes = next;
+      selectedId = next[0].id;
+      elements.copyStatus.textContent = "";
+      render();
+    }
+
+    elements.paletteGrid.addEventListener("click", (event) => {
+      const card = event.target.closest(".palette");
+      if (!card) return;
+      selectedId = card.dataset.id;
+      elements.copyStatus.textContent = "";
+      render();
+    });
+
+    elements.copySelectedBtn.addEventListener("click", () => {
+      copyText(elements.markdownOutput.value, elements.copyStatus);
+    });
+
+    elements.markdownOutput.addEventListener("click", () => {
+      elements.markdownOutput.select();
+    });
+
+    async function loadInitialMarkdown() {
+      applyMarkdown(DEFAULT_MARKDOWN);
+
+      if (window.location.protocol === "file:") {
+        return;
+      }
+
+      try {
+        const response = await fetch("Design.md", { cache: "no-store" });
+        if (!response.ok) return;
+        applyMarkdown(await response.text());
+      } catch (error) {
+      }
+    }
+
+    loadInitialMarkdown();
+  </script>
+</body>
+</html>
