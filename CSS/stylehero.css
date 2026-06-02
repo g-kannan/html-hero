@@ -144,6 +144,23 @@ h1 {
   color: var(--active);
 }
 
+.tab-button.utility-tab {
+  border-color: rgba(93, 90, 114, 0.18);
+  background: rgba(93, 90, 114, 0.08);
+  color: #555160;
+}
+
+.tab-button.utility-tab:hover {
+  background: rgba(93, 90, 114, 0.14);
+  color: var(--ink);
+}
+
+.tab-button.utility-tab.active {
+  border-color: rgba(93, 90, 114, 0.32);
+  background: rgba(93, 90, 114, 0.18);
+  color: var(--ink);
+}
+
 .tab-panel {
   display: none;
 }
@@ -601,6 +618,101 @@ input[type="range"]:focus {
   font-weight: 800;
 }
 
+.prompt-list {
+  display: grid;
+  gap: 12px;
+}
+
+.prompt-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  padding: 14px 16px;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.prompt-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(23, 1, 208, 0.34);
+  box-shadow: 0 12px 28px rgba(23, 1, 208, 0.1);
+}
+
+.prompt-card.selected {
+  border-color: var(--active);
+  box-shadow: 0 0 0 3px rgba(23, 1, 208, 0.14);
+}
+
+.prompt-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.prompt-card p {
+  margin: 0;
+  color: #1f2a44;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.prompt-theme {
+  display: grid;
+  gap: 8px;
+  min-height: 106px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 12px;
+}
+
+.prompt-theme .empty {
+  min-height: 80px;
+  padding: 10px;
+}
+
+.prompt-theme-name {
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.prompt-theme-font {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.prompt-theme-swatches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.prompt-theme-swatches span {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.prompt-output {
+  min-height: 280px;
+}
+
 .guide-panel {
   background: #0b1020;
   border-color: #26324f;
@@ -700,6 +812,11 @@ input[type="range"]:focus {
   .form-grid,
   .input-row {
     grid-template-columns: 1fr;
+  }
+
+  .prompt-card {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .field.full {
