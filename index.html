@@ -266,6 +266,7 @@
             </div>
             <div id="promptThemePreview" class="prompt-theme"></div>
             <textarea id="promptOutput" class="markdown-output prompt-output" readonly aria-label="Selected prompt text"></textarea>
+            <p id="promptStats" class="prompt-stats" aria-live="polite"></p>
             <p id="promptStatus" class="status" aria-live="polite"></p>
           </section>
         </aside>
@@ -455,6 +456,7 @@ Accent:
       promptTemplateList: document.querySelector("#promptTemplateList"),
       promptThemePreview: document.querySelector("#promptThemePreview"),
       promptOutput: document.querySelector("#promptOutput"),
+      promptStats: document.querySelector("#promptStats"),
       copyPromptBtn: document.querySelector("#copyPromptBtn"),
       promptStatus: document.querySelector("#promptStatus"),
       diagramGuideSource: document.querySelector("#diagramGuideSource"),
@@ -788,11 +790,23 @@ Accent:
       ].join("\n");
     }
 
+    function promptStats(markdown) {
+      const characters = markdown.length;
+      const words = markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
+      const estimatedTokens = Math.ceil(characters / 4);
+      return [
+        `Characters: ${characters.toLocaleString()}`,
+        `Words: ${words.toLocaleString()}`,
+        `Estimated Tokens: ${estimatedTokens.toLocaleString()}`,
+      ].join("\n");
+    }
+
     function renderPromptSelector() {
       if (!elements.promptTemplateList) return;
 
       const palette = selectedPalettes()[0];
       const template = selectedPromptTemplate();
+      const markdown = selectedPromptMarkdown();
       elements.promptTemplateList.innerHTML = "";
 
       const fragment = document.createDocumentFragment();
@@ -823,7 +837,8 @@ Accent:
         elements.promptThemePreview.innerHTML = `<div class="empty">Select a palette to auto-fill the theme.</div>`;
       }
 
-      elements.promptOutput.value = selectedPromptMarkdown();
+      elements.promptOutput.value = markdown;
+      elements.promptStats.textContent = promptStats(markdown);
       elements.copyPromptBtn.disabled = !template;
     }
 
