@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modern HTML Capabilities</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#1701D0;
+      --accent:#F36A10;
+      --ink:#101126;
+      --muted:#666B85;
+      --soft:#F5F3FF;
+      --line:#E7E5F8;
+      --paper:#FFFFFF;
+      --bg:#FAFAFF;
+      --ok:#138A52;
+      --warn:#B45F00;
+      --danger:#C93C3C;
+      --shadow:0 24px 70px rgba(23,1,208,.14);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(23,1,208,.12), transparent 32rem),
+        radial-gradient(circle at top right, rgba(243,106,16,.13), transparent 28rem),
+        var(--bg);
+    }
+    button,input,textarea,select{font:inherit}
+    .wrap{max-width:1180px;margin:auto;padding:28px}
+    header.hero{
+      min-height:auto;
+      display:grid;
+      align-items:end;
+      padding:24px 0 22px;
+    }
+    .hero-shell{
+      background:linear-gradient(135deg,var(--primary),#5A45FF 62%,#9F4D91);
+      color:white;
+      border-radius:var(--radius);
+      padding:clamp(24px,4vw,42px);
+      position:relative;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+    .hero-shell:after{
+      content:"";
+      position:absolute;
+      width:330px;
+      height:330px;
+      right:-80px;
+      bottom:-120px;
+      border-radius:50%;
+      background:rgba(243,106,16,.42);
+    }
+    .hero-content{position:relative;z-index:1;max-width:900px}
+    h1{font-size:clamp(40px,7vw,78px);line-height:.95;margin:18px 0 16px;letter-spacing:0}
+    .lead{font-size:clamp(17px,1.8vw,22px);line-height:1.45;color:rgba(255,255,255,.86);max-width:780px}
+    .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px}
+    .btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:.22s ease;min-height:44px}
+    .btn.primary{background:var(--primary);color:white;box-shadow:0 16px 34px rgba(23,1,208,.28)}
+    .btn.secondary{background:white;color:var(--primary);border:1px solid var(--line)}
+    .btn.ghost{background:rgba(255,255,255,.14);color:white;border:1px solid rgba(255,255,255,.26)}
+    .btn:hover{transform:translateY(-2px)}
+    .metric-row{display:grid;grid-template-columns:repeat(3,minmax(120px,1fr));gap:12px;margin-top:22px;max-width:640px}
+    .metric{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);padding:16px;border-radius:18px}
+    .metric b{display:block;font-size:30px}.metric small{opacity:.82}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:34px 0}
+    .section-block{margin:34px 0 48px}
+    .section-title{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:18px 0 24px}
+    .section-title h2{font-size:34px;margin:0;letter-spacing:0}
+    .section-title p{margin:0;color:var(--muted);line-height:1.5;max-width:650px}
+    .cap-card{background:white;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 14px 40px rgba(15,15,60,.05);transition:.2s;cursor:pointer;min-height:218px}
+    .cap-card:hover,.cap-card.active{transform:translateY(-4px);border-color:rgba(23,1,208,.28);box-shadow:0 18px 54px rgba(23,1,208,.12)}
+    .cap-num{font-weight:900;color:var(--accent);font-size:14px}
+    .cap-card h3{margin:12px 0 8px;font-size:22px;letter-spacing:0}
+    .cap-card p{margin:0;color:var(--muted);line-height:1.45}
+    .pill{display:inline-flex;margin-top:16px;background:rgba(23,1,208,.08);color:var(--primary);font-weight:800;border-radius:999px;padding:7px 10px;font-size:12px}
+    .experience{margin:22px 0 70px}
+    .view-tabs{display:inline-flex;gap:8px;background:white;border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:0 12px 32px rgba(15,15,60,.06);position:sticky;top:12px;z-index:20}
+    .view-tab{border:0;background:transparent;color:var(--muted);font-weight:900;border-radius:999px;padding:12px 16px;cursor:pointer}
+    .view-tab.active{background:var(--primary);color:white}
+    .app-section{display:none;margin-top:22px}
+    .app-section.active{display:block;animation:rise .24s ease}
+    .showcase{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .tabs{display:flex;gap:8px;overflow:auto;padding:14px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:10}
+    .tab{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:800;border-radius:999px;padding:10px 14px;cursor:pointer}
+    .tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+    .panel{display:none;padding:28px}
+    .panel.active{display:block;animation:rise .28s ease}
+    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .panel-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}
+    .panel h2{font-size:36px;letter-spacing:0;margin:0}
+    .panel .desc{color:var(--muted);line-height:1.55;max-width:760px}
+    .tag{background:rgba(243,106,16,.1);color:var(--accent);padding:8px 12px;border-radius:999px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .wide{grid-column:1 / -1}
+    .box{border:1px solid var(--line);border-radius:18px;padding:20px;background:#fff}
+    .box h4{margin:0 0 12px;font-size:18px}
+    .muted{color:var(--muted)}
+    .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .tech-card{background:#fff;border:1px solid #DCE2EC;border-radius:12px;padding:24px;box-shadow:0 16px 30px rgba(16,17,38,.08);min-height:230px}
+    .tech-card h3{color:var(--primary);font-size:23px;line-height:1.35;margin:0 0 14px;border-bottom:1px solid #DCE2EC;padding-bottom:12px}
+    .tech-card p{font-size:16px;line-height:1.5;margin:0 0 16px}
+    .tech-card label{display:block;font-weight:800;font-size:14px;margin:16px 0 8px}
+    .tech-card input:not([type="range"]):not([type="color"]){width:100%;border:1px solid #DCE2EC;border-radius:7px;padding:9px 10px}
+    .tech-card input[type="color"]{width:100%;height:38px;border:1px solid #DCE2EC;border-radius:7px;padding:4px}
+    .tech-card input[type="range"],.tech-card progress,.tech-card meter{width:100%}
+    .native-dialog{border:0;border-radius:18px;box-shadow:0 24px 80px rgba(16,17,38,.28);max-width:430px;padding:0}
+    .native-dialog::backdrop{background:rgba(16,17,38,.46)}
+    .dialog-body{padding:24px}
+    .native-popover{border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 16px 40px rgba(16,17,38,.16);max-width:260px}
+    .summary-row{display:block;border:1px solid #DCE2EC;border-radius:7px;padding:10px 12px;margin-top:10px;color:var(--primary);font-weight:900}
+    .tech-output{font-size:13px;color:var(--muted);margin-top:8px;min-height:20px}
+    .approaches{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .approach{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+    .approach.selected{border-color:var(--primary);box-shadow:0 14px 34px rgba(23,1,208,.12)}
+    .approach h4{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .pros-cons ul{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.45}
+    .badge{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:12px;font-weight:900;background:var(--soft);color:var(--primary)}
+    .score{height:10px;border-radius:999px;background:var(--soft);overflow:hidden;margin:8px 0 12px}
+    .score span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px}
+    .control-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+    .control-row label{display:flex;gap:8px;align-items:center;font-weight:800;color:var(--muted)}
+    .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0D0B2B;color:white;border-radius:16px;padding:16px;line-height:1.65;overflow:auto;white-space:pre}
+    .comment{color:#FFD27A}.add{color:#8AFFC1}.del{color:#FF9A9A}.keyword{color:#B7ACFF}
+    .module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .module{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+    .module strong{color:var(--primary)}
+    .issue{display:flex;justify-content:space-between;gap:12px;border-left:4px solid var(--accent);background:var(--soft);border-radius:12px;padding:12px;margin-top:10px}
+    .tokens{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .swatch{border-radius:16px;overflow:hidden;border:1px solid var(--line);cursor:pointer}
+    .color{height:82px}.swatch div:last-child{padding:12px;font-weight:800;background:white}
+    .component-preview{border:1px solid var(--line);border-radius:18px;padding:20px;background:var(--soft)}
+    .phone{width:240px;margin:auto;border:10px solid #111;border-radius:34px;padding:16px;background:white;box-shadow:0 20px 50px rgba(0,0,0,.12)}
+    .screen{min-height:330px;border-radius:22px;background:linear-gradient(180deg,var(--soft),#fff);padding:14px}
+    .bubble{padding:12px;border-radius:16px;background:var(--primary);color:white;margin:10px 0;font-weight:700}
+    .bubble.alt{background:var(--accent)}
+    .flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .step{border:1px solid var(--line);border-radius:16px;padding:14px;font-weight:800}
+    .step.active{background:var(--primary);color:white}
+    .svg-wrap svg{width:100%;height:280px}
+    .slide{aspect-ratio:16/9;background:linear-gradient(135deg,var(--primary),#05041A);border-radius:18px;color:white;padding:34px;display:flex;flex-direction:column;justify-content:space-between}
+    .slide h3{font-size:40px;letter-spacing:0;margin:0}
+    .slide small{color:#FFC9A8;font-weight:800}
+    details{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+    summary{cursor:pointer;font-weight:900;color:var(--primary)}
+    .timeline{display:grid;gap:12px}
+    .event{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:start}
+    .time{font-weight:900;color:var(--accent)}
+    .event-card{border-left:4px solid var(--primary);background:var(--soft);padding:14px;border-radius:14px}
+    .source-text-panel{background:#050505;color:#fff;border-radius:18px;padding:18px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+    .migration-timeline{position:relative;padding-left:32px;display:grid;gap:26px}
+    .migration-timeline:before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:2px;background:#e0e0e0}
+    .migration-event{position:relative}
+    .migration-event:before{content:"";position:absolute;left:-32px;top:7px;width:12px;height:12px;border-radius:50%;background:#8c8c8c;z-index:1}
+    .migration-event.warning:before{background:#e06d53}
+    .migration-event.success:before{background:#769665}
+    .time-badge{display:inline-block;background:#f4f4f5;color:#555;font-size:13px;font-weight:800;padding:3px 12px;border:1px solid #e4e4e7;border-radius:999px;margin-bottom:8px}
+    .migration-event p{margin:0;color:#2b2b2b;line-height:1.6}
+    .migration-event strong{color:#000}
+    .board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .lane{background:var(--soft);border-radius:18px;padding:12px;min-height:190px}
+    .lane h5{margin:0 0 10px;color:var(--primary)}
+    .ticket{background:white;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;font-weight:700;font-size:13px;cursor:pointer}
+    .ticket.selected{outline:3px solid rgba(243,106,16,.28)}
+    textarea,.text-input{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+    footer{padding:40px 0 60px;color:var(--muted);text-align:center}
+    @media(max-width:960px){
+      .demo-grid,.approaches,.module-grid,.tech-grid{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr 1fr}
+      .tokens,.board,.flow-steps,.metric-row{grid-template-columns:1fr}
+      .panel-head{display:block}
+      .section-title{display:block}
+    }
+    @media(max-width:620px){
+      .wrap{padding:18px}
+      .grid{grid-template-columns:1fr}
+      h1{font-size:44px}
+      .panel{padding:18px}
+      .panel h2{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <section class="hero-shell">
+        <div class="hero-content">
+          <h1>Modern HTML Capabilities</h1>
+          <p class="lead">Explore practical browser features like search boxes, accordions, sliders, modals, color pickers, and progress bars, then switch tabs to see how they support real workflows.</p>
+          <div class="cta">
+            <a class="btn secondary" href="#experience">Open the demo</a>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <main class="experience" id="experience">
+      <div class="view-tabs" aria-label="Main views">
+        <button class="view-tab active" data-view="simple-controls">Simple Controls</button>
+        <button class="view-tab" data-view="use-cases">Use Cases</button>
+      </div>
+
+      <section class="app-section active" id="simple-controls">
+        <div class="tech-grid">
+          <article class="tech-card">
+            <h3>1. Modal</h3>
+            <p>Show an important message in front of the page, then close it when the user is done.</p>
+            <button class="btn primary" id="launchNativeModal">Open Modal</button>
+          </article>
+
+          <article class="tech-card">
+            <h3>2. Menu</h3>
+            <p>Open a small floating menu for quick actions, filters, help text, or options.</p>
+            <button class="btn primary" popovertarget="nativePopoverMenu">Open Menu</button>
+            <div class="native-popover" id="nativePopoverMenu" popover>
+              <strong>Quick menu</strong>
+              <p class="muted">Use this pattern for small choices without leaving the page.</p>
+            </div>
+          </article>
+
+          <article class="tech-card">
+            <h3>3. Accordions</h3>
+            <p>Hide extra detail until someone wants to read it.</p>
+            <details>
+              <summary class="summary-row">What is inside?</summary>
+              <p class="muted">A short answer, note, checklist, policy, or explanation.</p>
+            </details>
+            <details>
+              <summary class="summary-row">When should I use it?</summary>
+              <p class="muted">Use it when the page needs detail without making the first view noisy.</p>
+            </details>
+          </article>
+
+          <article class="tech-card">
+            <h3>4. Search & Date</h3>
+            <label for="nativeSearch">Search with suggestions:</label>
+            <input id="nativeSearch" list="htmlSuggestions" placeholder="Start typing...">
+            <datalist id="htmlSuggestions">
+              <option value="Modal">
+              <option value="Menu">
+              <option value="Accordion">
+              <option value="Slider">
+              <option value="Progress bar">
+            </datalist>
+            <label for="nativeDate">Pick a date:</label>
+            <input id="nativeDate" type="date">
+            <div class="tech-output" id="formOutput">Choose a suggestion or date to update this preview.</div>
+          </article>
+
+          <article class="tech-card">
+            <h3>5. Progress</h3>
+            <label for="taskProgress">Task progress:</label>
+            <progress id="taskProgress" max="100" value="70"></progress>
+            <label for="storageOptimal">Storage level:</label>
+            <p class="muted">Normal:</p>
+            <meter id="storageOptimal" min="0" max="100" low="30" high="80" optimum="70" value="65"></meter>
+            <p class="muted">Needs attention:</p>
+            <meter id="storageCritical" min="0" max="100" low="30" high="80" optimum="20" value="88"></meter>
+          </article>
+
+          <article class="tech-card">
+            <h3>6. Color & Slider</h3>
+            <label for="nativeColor">Pick a color:</label>
+            <input id="nativeColor" type="color" value="#1701d0">
+            <div class="tech-output" id="colorOutput">#1701d0</div>
+            <label for="nativeRange">Move the slider:</label>
+            <input id="nativeRange" type="range" min="0" max="100" value="50">
+            <div class="tech-output" id="rangeOutput">Slider value: 50</div>
+          </article>
+        </div>
+      </section>
+
+      <dialog class="native-dialog" id="nativeDialog">
+        <form method="dialog" class="dialog-body">
+          <h3>Modal is open</h3>
+          <p class="muted">Use this for confirmations, focused tasks, and important messages.</p>
+          <button class="btn primary">Close Modal</button>
+        </form>
+      </dialog>
+
+      <section class="app-section" id="use-cases">
+        <section class="showcase">
+          <nav class="tabs" id="tabs"></nav>
+          <div id="panels"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer>Built with Inter, Primary #1701D0, Accent #F36A10. Open this file directly in any modern browser.</footer>
+  </div>
+
+  <script>
+    const capabilities = [
+      {id:'performance-scale', no:'01', title:'Timeline', tag:'Scale', desc:'Show the PostgreSQL upgrade narrative as raw source text plus an upgrade sequence.'},
+      {id:'explore', no:'02', title:'Exploration & Planning', tag:'Compare', desc:'Compare implementation paths with pros, cons, metrics, and a live recommendation.'},
+      {id:'review', no:'03', title:'Code Review & Understanding', tag:'Scan', desc:'Read commented modules, inspect a diff, and filter review findings by severity.'},
+      {id:'design', no:'04', title:'Design', tag:'Tokens', desc:'Make colors, component states, and theme choices visible and adjustable.'},
+      {id:'prototype', no:'05', title:'Prototyping', tag:'Feel', desc:'Click through an app flow and see how states change before code is built.'},
+      {id:'diagrams', no:'06', title:'Illustrations & Diagrams', tag:'SVG', desc:'Toggle labels and paths in an inline SVG system diagram.'},
+      {id:'decks', no:'07', title:'Decks', tag:'Present', desc:'Navigate a lightweight slide deck with buttons and keyboard arrows.'},
+      {id:'research', no:'08', title:'Research & Learning', tag:'Learn', desc:'Search a glossary and check comprehension in the same HTML artifact.'},
+      {id:'reports', no:'09', title:'Reports', tag:'Status', desc:'Update report metrics and see status summaries recalculate.'},
+      {id:'editors', no:'10', title:'Custom Editing Interfaces', tag:'Loop', desc:'Edit a focused task board and export the result as markdown.'}
+    ];
+
+    const panelHTML = {
+      'performance-scale': `
+        <div class="panel-head"><div><h2>Performance and scale</h2><p class="desc">A PostgreSQL version-deprecation challenge summarized as the actual source text and upgrade sequence adapted from the test folder example.</p></div></div>
+        <div class="demo-grid">
+          <div class="box">
+            <h4>Actual text</h4>
+            <div class="source-text-panel">No performance issues have been observed in the current platform. One of challenges
+encountered was related to PostgreSQL version deprecation on AWS. The database was
+initially running on PostgreSQL version 12, which was approaching end of support.
+To address this, we upgraded the platform to PostgreSQL version 15. This involved
+provisioning a new RDS PostgreSQL instance, migrating the data, and updating pipeline
+connections to point to the new database. The transition was completed without any
+impact on data integrity or pipeline logic, as the SQL used is standard and not
+dependent on version-specific features.
+Post-upgrade, the system has been stable, and no performance regressions or
+functional issues have been observed.</div>
+          </div>
+          <div class="box">
+            <h4>Upgrade sequence</h4>
+            <div class="migration-timeline">
+              <div class="migration-event warning">
+                <div class="time-badge">Challenge Encountered</div>
+                <p><strong>PostgreSQL 12 deprecation.</strong> The AWS RDS database was approaching end of support, creating a platform maintenance risk.</p>
+              </div>
+              <div class="migration-event">
+                <div class="time-badge">Upgrade Target</div>
+                <p><strong>PostgreSQL 15 selected.</strong> The platform moved from PostgreSQL 12 to PostgreSQL 15.</p>
+              </div>
+              <div class="migration-event">
+                <div class="time-badge">Execution</div>
+                <p><strong>New RDS instance provisioned.</strong> A fresh PostgreSQL instance was created, data was migrated, and pipeline connections were updated.</p>
+              </div>
+              <div class="migration-event success">
+                <div class="time-badge">Zero Impact</div>
+                <p><strong>Data and logic preserved.</strong> The transition completed without impact to data integrity or pipeline logic because standard SQL was used.</p>
+              </div>
+              <div class="migration-event success">
+                <div class="time-badge">Current Status</div>
+                <p><strong>Stable platform.</strong> No performance regressions or functional issues have been observed after the upgrade.</p>
+              </div>
+            </div>
+          </div>
+        </div>`,
+      explore: `
+        <div class="panel-head"><div><h2>Exploration & Planning</h2><p class="desc">Like an approach memo, this module puts options, code shape, pros, cons, and metrics in one place. Move the priority sliders to change the recommendation.</p></div><span class="tag">Decision-ready</span></div>
+        <div class="box wide">
+          <h4>Planning priorities</h4>
+          <div class="control-row">
+            <label>Speed <input id="speedRange" type="range" min="1" max="5" value="3"></label>
+            <label>Reuse <input id="reuseRange" type="range" min="1" max="5" value="4"></label>
+            <label>Risk control <input id="riskRange" type="range" min="1" max="5" value="4"></label>
+          </div>
+          <p class="muted" id="exploreRecommendation"></p>
+        </div>
+        <div class="approaches">
+          <article class="approach" data-plan="inline">
+            <h4>01 Inline useEffect <span class="badge">Fast</span></h4>
+            <p class="muted">Debounce logic lives directly in the component that owns the input.</p>
+            <div class="code"><span class="keyword">useEffect</span>(() => {
+  const id = setTimeout(() => setQuery(draft), 300);
+  return () => clearTimeout(id);
+}, [draft]);</div>
+            <div class="pros-cons"><div><strong>Pros</strong><ul><li>Zero abstraction</li><li>Easy to debug</li><li>No dependency</li></ul></div><div><strong>Cons</strong><ul><li>Duplicates quickly</li><li>Two state values</li><li>Delay is buried</li></ul></div></div>
+            <div class="score"><span style="width:62%"></span></div><p class="muted">Bundle +0 kb | Testability medium | Reuse low</p>
+          </article>
+          <article class="approach selected" data-plan="hook">
+            <h4>02 Custom hook <span class="badge">Balanced</span></h4>
+            <p class="muted">Extract the timer into a shared hook under the hooks folder.</p>
+            <div class="code"><span class="comment">// src/hooks/useDebounce.ts</span>
+export function useDebounce(value, ms = 300) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), ms);
+    return () => clearTimeout(id);
+  }, [value, ms]);
+  return debounced;
+}</div>
+            <div class="pros-cons"><div><strong>Pros</strong><ul><li>Reusable import</li><li>Simple fake-timer tests</li><li>Delay is visible</li></ul></div><div><strong>Cons</strong><ul><li>One more file</li><li>Generic naming needs docs</li><li>Still renders per keypress</li></ul></div></div>
+            <div class="score"><span style="width:86%"></span></div><p class="muted">Bundle +0.2 kb | Testability high | Reuse high</p>
+          </article>
+          <article class="approach" data-plan="library">
+            <h4>03 External library <span class="badge">Power</span></h4>
+            <p class="muted">Use a small utility package when edge semantics matter.</p>
+            <div class="code">const onChange = useDebouncedCallback(
+  next => setQuery(next),
+  300,
+  { maxWait: 1000 }
+);</div>
+            <div class="pros-cons"><div><strong>Pros</strong><ul><li>maxWait support</li><li>Flush and cancel</li><li>Battle-tested cases</li></ul></div><div><strong>Cons</strong><ul><li>New dependency</li><li>Audit overhead</li><li>Pattern drift risk</li></ul></div></div>
+            <div class="score"><span style="width:72%"></span></div><p class="muted">Bundle +1.4 kb | Testability high | Reuse high</p>
+          </article>
+        </div>`,
+      review: `
+        <div class="panel-head"><div><h2>Code Review & Understanding</h2><p class="desc">Each module below includes comments that explain its responsibility. Use the severity filter to focus the review queue.</p></div><span class="tag">Reviewer-friendly</span></div>
+        <div class="demo-grid">
+          <div class="box">
+            <h4>Annotated diff</h4>
+            <div class="code"><span class="del">- return rawValue</span>
+<span class="add">+ return sanitize(rawValue)</span>
+<span class="comment">// Escapes user supplied markup before rendering.</span>
+<span class="add">+ logValidation(metricName)</span>
+<span class="comment">// Emits a metric so invalid payloads can be tracked.</span></div>
+          </div>
+          <div class="box">
+            <h4>Review focus</h4>
+            <div class="control-row">
+              <label><input name="severity" type="radio" value="all" checked> All</label>
+              <label><input name="severity" type="radio" value="high"> High</label>
+              <label><input name="severity" type="radio" value="medium"> Medium</label>
+            </div>
+            <div id="reviewIssues"></div>
+          </div>
+        </div>
+        <div class="box wide">
+          <h4>Commented module map</h4>
+          <div class="module-grid">
+            <article class="module"><strong>TaskSearch.tsx</strong><div class="code"><span class="comment">// Owns the search input state.</span>
+const [draft, setDraft] = useState('');
+<span class="comment">// Keeps fetching separate from typing.</span>
+const query = useDebounce(draft, 300);</div></article>
+            <article class="module"><strong>useDebounce.ts</strong><div class="code"><span class="comment">// Converts a fast-changing value into a stable value.</span>
+export function useDebounce(value, ms) {
+  <span class="comment">// Cleanup prevents stale timers after unmount.</span>
+  return debounced;
+}</div></article>
+            <article class="module"><strong>tasks.api.ts</strong><div class="code"><span class="comment">// Accepts the settled query and calls the API.</span>
+export function useTasks(params) {
+  <span class="comment">// Query key includes search for cache isolation.</span>
+  return useQuery(['tasks', params]);
+}</div></article>
+          </div>
+        </div>`,
+      design: `
+        <div class="panel-head"><div><h2>Design</h2><p class="desc">Choose a token and watch the component preview update. This makes visual decisions testable without opening a design tool.</p></div><span class="tag">Design system</span></div>
+        <div class="demo-grid">
+          <div class="box"><h4>Theme tokens</h4><div class="tokens">
+            <div class="swatch" data-color="#1701D0"><div class="color" style="background:#1701D0"></div><div>Primary</div></div>
+            <div class="swatch" data-color="#F36A10"><div class="color" style="background:#F36A10"></div><div>Accent</div></div>
+            <div class="swatch" data-color="#138A52"><div class="color" style="background:#138A52"></div><div>Success</div></div>
+            <div class="swatch" data-color="#101126"><div class="color" style="background:#101126"></div><div>Ink</div></div>
+          </div></div>
+          <div class="box"><h4>Live component preview</h4><div class="component-preview" id="designPreview"><button class="btn primary" id="tokenButton">Primary action</button><p class="muted">Selected color: <strong id="tokenValue">#1701D0</strong></p></div></div>
+        </div>`,
+      prototype: `
+        <div class="panel-head"><div><h2>Prototyping</h2><p class="desc">Click through a four-step flow. The phone mock and progress states update as the user journey changes.</p></div><span class="tag">Interactive</span></div>
+        <div class="demo-grid">
+          <div class="box"><h4>Flow states</h4><div class="flow-steps" id="flowSteps"></div><p><button class="btn secondary" id="prevStep">Back</button> <button class="btn primary" id="nextStep">Next</button></p></div>
+          <div class="box"><div class="phone"><div class="screen" id="phoneScreen"></div></div></div>
+        </div>`,
+      diagrams: `
+        <div class="panel-head"><div><h2>Illustrations & Diagrams</h2><p class="desc">Toggle annotations to switch between a clean diagram and a review-ready explanation.</p></div><span class="tag">Vector</span></div>
+        <div class="box wide">
+          <div class="control-row"><label><input id="diagramLabels" type="checkbox" checked> Show labels</label><label><input id="diagramData" type="checkbox" checked> Show data path</label></div>
+          <div class="svg-wrap"><svg viewBox="0 0 900 300" role="img" aria-label="Input, HTML artifact, decision diagram">
+            <defs><marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#F36A10"/></marker></defs>
+            <rect x="40" y="90" width="160" height="95" rx="24" fill="#1701D0"/><text class="diagram-label" x="120" y="145" fill="white" text-anchor="middle" font-weight="900">Input</text>
+            <rect x="360" y="60" width="180" height="150" rx="28" fill="#F5F3FF" stroke="#1701D0" stroke-width="3"/><text class="diagram-label" x="450" y="128" text-anchor="middle" font-weight="900">HTML Artifact</text><text class="diagram-label" x="450" y="158" text-anchor="middle" fill="#666B85">layout + style + logic</text>
+            <rect x="700" y="90" width="160" height="95" rx="24" fill="#F36A10"/><text class="diagram-label" x="780" y="145" fill="white" text-anchor="middle" font-weight="900">Decision</text>
+            <path class="diagram-path" d="M200 138 H355" stroke="#F36A10" stroke-width="5" marker-end="url(#arr2)"/><path class="diagram-path" d="M540 138 H695" stroke="#F36A10" stroke-width="5" marker-end="url(#arr2)"/>
+          </svg></div>
+        </div>`,
+      decks: `
+        <div class="panel-head"><div><h2>Decks</h2><p class="desc">Use the controls or arrow keys to navigate slides. The content stays portable because it is just HTML.</p></div><span class="tag">Meeting-ready</span></div>
+        <div class="demo-grid">
+          <div class="slide" id="slideView"></div>
+          <div class="box"><h4>Slide controls</h4><p class="muted" id="slideCounter"></p><p><button class="btn secondary" id="prevSlide">Back</button> <button class="btn primary" id="nextSlide">Next</button></p></div>
+        </div>`,
+      research: `
+        <div class="panel-head"><div><h2>Research & Learning</h2><p class="desc">Filter a glossary and check a concept. This turns static notes into a navigable learning artifact.</p></div><span class="tag">Explainer</span></div>
+        <div class="demo-grid">
+          <div class="box"><h4>Glossary search</h4><input class="text-input" id="glossarySearch" placeholder="Search terms"><div id="glossaryList"></div></div>
+          <div class="box"><h4>Quick check</h4><p class="muted">Which artifact is best when the output needs code, style, and interaction in one portable file?</p><select id="quizAnswer" class="text-input"><option value="">Choose an answer</option><option>Markdown note</option><option>HTML artifact</option><option>Plain text email</option></select><p id="quizResult" class="muted"></p></div>
+        </div>`,
+      reports: `
+        <div class="panel-head"><div><h2>Reports</h2><p class="desc">Change the metric inputs and the summary recalculates. This is useful for weekly updates, incident notes, and team status reviews.</p></div><span class="tag">Readable</span></div>
+        <div class="demo-grid">
+          <div class="box"><h4>Status inputs</h4><label>Delivery <input id="deliveryRange" type="range" min="0" max="100" value="74"></label><br><label>Quality <input id="qualityRange" type="range" min="0" max="100" value="82"></label><br><label>Risk <input id="reportRiskRange" type="range" min="0" max="100" value="35"></label><p id="reportSummary" class="muted"></p></div>
+          <div class="box"><h4>Incident timeline</h4><div class="timeline"><div class="event"><div class="time">09:00</div><div class="event-card">Signal detected</div></div><div class="event"><div class="time">09:18</div><div class="event-card">Owner assigned</div></div><div class="event"><div class="time">09:45</div><div class="event-card">Fix verified</div></div></div></div>
+        </div>`,
+      editors: `
+        <div class="panel-head"><div><h2>Custom Editing Interfaces</h2><p class="desc">Edit the selected ticket and export the board as markdown. This keeps the user in the loop while producing structured output.</p></div><span class="tag">User-in-loop</span></div>
+        <div class="demo-grid">
+          <div class="box"><h4>Mini triage board</h4><div class="board" id="editBoard"></div></div>
+          <div class="box"><h4>Edit and export</h4><input class="text-input" id="ticketText" placeholder="Select a ticket"><p><button class="btn primary" id="saveTicket">Save ticket</button></p><textarea id="exportBox" style="height:160px"></textarea><p><button class="btn secondary" id="copyMarkdown">Copy markdown</button></p></div>
+        </div>`
+    };
+
+    const tabs = document.getElementById('tabs');
+    const panels = document.getElementById('panels');
+
+    capabilities.forEach((capability, index) => {
+      const tab = document.createElement('button');
+      tab.className = 'tab' + (index === 0 ? ' active' : '');
+      tab.textContent = capability.title;
+      tab.onclick = () => activate(capability.id);
+      tabs.appendChild(tab);
+
+      const panel = document.createElement('section');
+      panel.className = 'panel' + (index === 0 ? ' active' : '');
+      panel.id = capability.id;
+      panel.innerHTML = panelHTML[capability.id];
+      panels.appendChild(panel);
+    });
+
+    const reviewItems = [
+      {severity:'high', text:'Sanitize the rendered task title before inserting it into the preview.'},
+      {severity:'medium', text:'Move the debounce delay into a named constant used by tests.'},
+      {severity:'medium', text:'Add a fake timer test for unmount cleanup.'}
+    ];
+    const flowCopy = [
+      {title:'Choose', text:'Pick a template and set the starting content.'},
+      {title:'Preview', text:'Check spacing, content density, and first-pass hierarchy.'},
+      {title:'Adjust', text:'Tune labels, order, and interaction details.'},
+      {title:'Confirm', text:'Export the artifact or hand it to implementation.'}
+    ];
+    const slides = [
+      {kicker:'SLIDE 01', title:'One file. Full narrative.', body:'Use HTML when the artifact needs to be read, clicked, and presented.'},
+      {kicker:'SLIDE 02', title:'Controls create clarity.', body:'Inputs, filters, and toggles make trade-offs easier to inspect.'},
+      {kicker:'SLIDE 03', title:'Export stays simple.', body:'Print, copy, or share the same portable browser file.'}
+    ];
+    const glossary = [
+      ['Artifact','A reusable output people can inspect, edit, or share.'],
+      ['Decision surface','An interface that exposes options and consequences together.'],
+      ['Scaffold','The structure around content that makes it easier to navigate.'],
+      ['Token','A named design value such as color, spacing, or radius.']
+    ];
+    const board = {
+      Now:['Fix blocker'],
+      Next:['Polish copy'],
+      Later:['Add chart'],
+      Cut:['Extra theme']
+    };
+    let currentFlowStep = 0;
+    let currentSlide = 0;
+    let selectedTicket = {lane:'Now', index:0};
+
+    document.querySelectorAll('.view-tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.view-tab,.app-section').forEach(el => el.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.view).classList.add('active');
+        wireDynamicControls();
+      };
+    });
+
+    function activate(id){
+      document.querySelectorAll('.tab,.panel').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.tab:nth-child(${capabilities.findIndex(capability => capability.id === id) + 1})`).classList.add('active');
+      document.getElementById(id).classList.add('active');
+      document.querySelector('.showcase').scrollIntoView({behavior:'smooth', block:'start'});
+      wireDynamicControls();
+    }
+
+    function wireDynamicControls(){
+      wireTechnicalCapabilities();
+      wireExploration();
+      wireReview();
+      wireDesign();
+      wirePrototype();
+      wireDiagram();
+      wireDeck();
+      wireResearch();
+      wireReports();
+      wireEditors();
+    }
+
+    function wireTechnicalCapabilities(){
+      const dialogButton = document.getElementById('launchNativeModal');
+      const dialog = document.getElementById('nativeDialog');
+      if(dialogButton && dialog) dialogButton.onclick = () => dialog.showModal();
+
+      const search = document.getElementById('nativeSearch');
+      const date = document.getElementById('nativeDate');
+      const formOutput = document.getElementById('formOutput');
+      if(search && date && formOutput){
+        const updateFormOutput = () => {
+          const topic = search.value || 'no suggestion selected';
+          const day = date.value || 'no date selected';
+          formOutput.textContent = `Form state: ${topic}; ${day}.`;
+        };
+        search.oninput = updateFormOutput;
+        date.oninput = updateFormOutput;
+      }
+
+      const color = document.getElementById('nativeColor');
+      const colorOutput = document.getElementById('colorOutput');
+      if(color && colorOutput){
+        color.oninput = event => {
+          colorOutput.textContent = event.target.value;
+          colorOutput.style.color = event.target.value;
+        };
+      }
+
+      const range = document.getElementById('nativeRange');
+      const rangeOutput = document.getElementById('rangeOutput');
+      if(range && rangeOutput){
+        range.oninput = event => rangeOutput.textContent = `Slider value: ${event.target.value}`;
+      }
+    }
+
+    function wireExploration(){
+      const speed = document.getElementById('speedRange');
+      if(!speed) return;
+      const update = () => {
+        const reuse = Number(document.getElementById('reuseRange').value);
+        const risk = Number(document.getElementById('riskRange').value);
+        const speedValue = Number(speed.value);
+        const choice = speedValue > reuse && speedValue > risk ? 'inline' : reuse + risk > 7 ? 'hook' : 'library';
+        document.querySelectorAll('.approach').forEach(card => card.classList.toggle('selected', card.dataset.plan === choice));
+        const label = choice === 'inline' ? 'Approach 01 wins because speed matters most.' : choice === 'hook' ? 'Approach 02 wins because reuse and risk control are both important.' : 'Approach 03 wins because advanced debounce behavior matters.';
+        document.getElementById('exploreRecommendation').textContent = label;
+      };
+      ['speedRange','reuseRange','riskRange'].forEach(id => document.getElementById(id).oninput = update);
+      update();
+    }
+
+    function wireReview(){
+      const target = document.getElementById('reviewIssues');
+      if(!target) return;
+      const render = () => {
+        const filter = document.querySelector('input[name="severity"]:checked').value;
+        target.innerHTML = reviewItems
+          .filter(item => filter === 'all' || item.severity === filter)
+          .map(item => `<div class="issue"><span>${item.text}</span><strong>${item.severity}</strong></div>`)
+          .join('');
+      };
+      document.querySelectorAll('input[name="severity"]').forEach(input => input.onchange = render);
+      render();
+    }
+
+    function wireDesign(){
+      const preview = document.getElementById('designPreview');
+      if(!preview) return;
+      document.querySelectorAll('.swatch').forEach(swatch => {
+        swatch.onclick = () => {
+          const color = swatch.dataset.color;
+          document.getElementById('tokenButton').style.background = color;
+          document.getElementById('tokenValue').textContent = color;
+          preview.style.borderColor = color;
+        };
+      });
+    }
+
+    function wirePrototype(){
+      const steps = document.getElementById('flowSteps');
+      if(!steps) return;
+      const render = () => {
+        steps.innerHTML = flowCopy.map((step, index) => `<div class="step ${index === currentFlowStep ? 'active' : ''}">${index + 1}. ${step.title}</div>`).join('');
+        document.getElementById('phoneScreen').innerHTML = `<div class="bubble">${flowCopy[currentFlowStep].title}</div><p class="muted">${flowCopy[currentFlowStep].text}</p>`;
+      };
+      document.getElementById('prevStep').onclick = () => { currentFlowStep = Math.max(0, currentFlowStep - 1); render(); };
+      document.getElementById('nextStep').onclick = () => { currentFlowStep = Math.min(flowCopy.length - 1, currentFlowStep + 1); render(); };
+      render();
+    }
+
+    function wireDiagram(){
+      const labels = document.getElementById('diagramLabels');
+      if(!labels) return;
+      const update = () => {
+        document.querySelectorAll('.diagram-label').forEach(el => el.style.display = labels.checked ? '' : 'none');
+        document.querySelectorAll('.diagram-path').forEach(el => el.style.display = document.getElementById('diagramData').checked ? '' : 'none');
+      };
+      labels.onchange = update;
+      document.getElementById('diagramData').onchange = update;
+      update();
+    }
+
+    function wireDeck(){
+      const slideView = document.getElementById('slideView');
+      if(!slideView) return;
+      const render = () => {
+        const slide = slides[currentSlide];
+        slideView.innerHTML = `<small>${slide.kicker}</small><h3>${slide.title}</h3><p>${slide.body}</p>`;
+        document.getElementById('slideCounter').textContent = `Slide ${currentSlide + 1} of ${slides.length}`;
+      };
+      document.getElementById('prevSlide').onclick = () => { currentSlide = (currentSlide + slides.length - 1) % slides.length; render(); };
+      document.getElementById('nextSlide').onclick = () => { currentSlide = (currentSlide + 1) % slides.length; render(); };
+      render();
+    }
+
+    function wireResearch(){
+      const search = document.getElementById('glossarySearch');
+      if(!search) return;
+      const render = () => {
+        const query = search.value.toLowerCase();
+        document.getElementById('glossaryList').innerHTML = glossary
+          .filter(([term, text]) => `${term} ${text}`.toLowerCase().includes(query))
+          .map(([term, text]) => `<details open><summary>${term}</summary><p class="muted">${text}</p></details>`)
+          .join('');
+      };
+      search.oninput = render;
+      document.getElementById('quizAnswer').onchange = event => {
+        document.getElementById('quizResult').textContent = event.target.value === 'HTML artifact' ? 'Correct. HTML can carry content, style, and behavior together.' : 'Try again. Look for the option that can include interaction.';
+      };
+      render();
+    }
+
+    function wireReports(){
+      const delivery = document.getElementById('deliveryRange');
+      if(!delivery) return;
+      const update = () => {
+        const d = Number(delivery.value);
+        const q = Number(document.getElementById('qualityRange').value);
+        const r = Number(document.getElementById('reportRiskRange').value);
+        const health = Math.round((d + q + (100 - r)) / 3);
+        document.getElementById('reportSummary').textContent = `Overall health: ${health}%. Delivery ${d}%, quality ${q}%, risk ${r}%.`;
+      };
+      ['deliveryRange','qualityRange','reportRiskRange'].forEach(id => document.getElementById(id).oninput = update);
+      update();
+    }
+
+    function wireEditors(){
+      const editBoard = document.getElementById('editBoard');
+      if(!editBoard) return;
+      const exportBoard = () => {
+        document.getElementById('exportBox').value = Object.entries(board).map(([lane, tickets]) => `## ${lane}\n${tickets.map(ticket => `- ${ticket}`).join('\n')}`).join('\n\n');
+      };
+      const render = () => {
+        editBoard.innerHTML = Object.entries(board).map(([lane, tickets]) => `<div class="lane"><h5>${lane}</h5>${tickets.map((ticket, index) => `<div class="ticket ${selectedTicket.lane === lane && selectedTicket.index === index ? 'selected' : ''}" data-lane="${lane}" data-index="${index}">${ticket}</div>`).join('')}</div>`).join('');
+        document.querySelectorAll('.ticket').forEach(ticket => {
+          ticket.onclick = () => {
+            selectedTicket = {lane:ticket.dataset.lane, index:Number(ticket.dataset.index)};
+            document.getElementById('ticketText').value = board[selectedTicket.lane][selectedTicket.index];
+            render();
+          };
+        });
+        document.getElementById('ticketText').value = board[selectedTicket.lane][selectedTicket.index];
+        exportBoard();
+      };
+      document.getElementById('saveTicket').onclick = () => {
+        board[selectedTicket.lane][selectedTicket.index] = document.getElementById('ticketText').value || 'Untitled task';
+        render();
+      };
+      document.getElementById('copyMarkdown').onclick = () => navigator.clipboard.writeText(document.getElementById('exportBox').value);
+      render();
+    }
+
+    function copySummary(){
+      const text = 'HTML can act as a single-file interface for exploration, review, design, prototyping, diagrams, decks, research, reports, and custom editors.';
+      navigator.clipboard.writeText(text);
+      alert('Summary copied.');
+    }
+
+    document.addEventListener('keydown', event => {
+      if(!document.getElementById('decks').classList.contains('active')) return;
+      if(event.key === 'ArrowRight') document.getElementById('nextSlide')?.click();
+      if(event.key === 'ArrowLeft') document.getElementById('prevSlide')?.click();
+    });
+
+    wireDynamicControls();
+  </script>
+</body>
+</html>

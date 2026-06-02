@@ -10,9 +10,8 @@
   <main class="app">
     <header class="topbar">
       <div>
-        <div class="eyebrow">Architecture design workspace</div>
-        <h1>Architecture Studio</h1>
-        <p class="intro">Configure architecture inputs, tune data flow behavior, and generate presentation-ready design notes.</p>
+        <h1>HTML Hero Studio</h1>
+        <p class="intro">Configure themes, architecture inputs, and quick prompts for presentation-ready HTML outputs.</p>
       </div>
       <div class="stats app-actions" aria-live="polite">
         <button id="copyAllBtn" class="btn" type="button" title="Copy all tabs as Markdown">
@@ -27,6 +26,7 @@
       <button class="tab-button" type="button" id="workloadTab" data-tab="workload" aria-controls="workloadPanel" aria-selected="false">Workload Inputs</button>
       <button class="tab-button" type="button" id="targetPlatformTab" data-tab="targetPlatform" aria-controls="targetPlatformPanel" aria-selected="false">Target Platform</button>
       <button class="tab-button" type="button" id="diagramGuideTab" data-tab="diagramGuide" aria-controls="diagramGuidePanel" aria-selected="false">Architecture Diagram Skill</button>
+      <button class="tab-button utility-tab" type="button" id="promptSelectorTab" data-tab="promptSelector" aria-controls="promptSelectorPanel" aria-selected="false">Prompt Selector</button>
     </nav>
 
     <p id="copyAllStatus" class="status global-status" aria-live="polite"></p>
@@ -246,6 +246,32 @@
       </div>
     </section>
 
+    <section id="promptSelectorPanel" class="tab-panel" role="tabpanel" aria-labelledby="promptSelectorTab" hidden>
+      <div class="workspace">
+        <section class="selection architecture-form" aria-labelledby="promptSelectorTitle">
+          <div class="panel-title">
+            <h2 id="promptSelectorTitle">Prompt Selector</h2>
+          </div>
+          <div id="promptTemplateList" class="prompt-list" aria-label="Prompt templates"></div>
+        </section>
+
+        <aside class="side">
+          <section class="selection" aria-labelledby="promptMarkdownTitle">
+            <div class="panel-title">
+              <h2 id="promptMarkdownTitle">LLM Prompt</h2>
+              <button id="copyPromptBtn" class="btn" type="button" title="Copy selected prompt">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                Copy
+              </button>
+            </div>
+            <div id="promptThemePreview" class="prompt-theme"></div>
+            <textarea id="promptOutput" class="markdown-output prompt-output" readonly aria-label="Selected prompt text"></textarea>
+            <p id="promptStatus" class="status" aria-live="polite"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
     <section id="diagramGuidePanel" class="tab-panel" role="tabpanel" aria-labelledby="diagramGuideTab" hidden>
       <section class="selection guide-panel" aria-labelledby="diagramGuideTitle">
         <div class="panel-title">
@@ -426,6 +452,11 @@ Accent:
       targetPlatformOutput: document.querySelector("#targetPlatformOutput"),
       copyTargetPlatformBtn: document.querySelector("#copyTargetPlatformBtn"),
       targetPlatformStatus: document.querySelector("#targetPlatformStatus"),
+      promptTemplateList: document.querySelector("#promptTemplateList"),
+      promptThemePreview: document.querySelector("#promptThemePreview"),
+      promptOutput: document.querySelector("#promptOutput"),
+      copyPromptBtn: document.querySelector("#copyPromptBtn"),
+      promptStatus: document.querySelector("#promptStatus"),
       diagramGuideSource: document.querySelector("#diagramGuideSource"),
       diagramGuideCode: document.querySelector("#diagramGuideCode"),
       copyDiagramGuideBtn: document.querySelector("#copyDiagramGuideBtn"),
@@ -435,6 +466,34 @@ Accent:
 
     let palettes = [];
     let selectedId = "";
+    let selectedPromptId = "executive-decision-brief";
+    const promptTemplates = [
+      {
+        id: "executive-decision-brief",
+        title: "Executive decision brief",
+        text: "Convert this input into an HTML decision brief with: recommendation, evidence, risks, decision owner, and next action.",
+      },
+      {
+        id: "architecture-review",
+        title: "Architecture review",
+        text: "Render this input as an HTML architecture review page with: context, diagram placeholders, dependencies, and open questions.",
+      },
+      {
+        id: "option-comparison",
+        title: "Option comparison",
+        text: "Turn this input into an HTML comparison matrix with trade-offs, impact, effort, and recommendation.",
+      },
+      {
+        id: "data-story-from-analysis",
+        title: "Data story from input",
+        text: "Build an HTML insight page from this input with: headline, key metrics, evidence table, and implication.",
+      },
+      {
+        id: "prototype-demo-handoff",
+        title: "Prototype / demo handoff",
+        text: "Transform this input into an HTML demo brief with user flow, states, acceptance criteria, and risks.",
+      },
+    ];
     const architectureState = {
       sources: [],
       customSource: "",
@@ -565,6 +624,7 @@ Accent:
       const items = selectedPalettes();
       elements.copySelectedBtn.disabled = items.length === 0;
       elements.markdownOutput.value = selectedPaletteMarkdown();
+      renderPromptSelector();
 
       if (!items.length) {
         elements.preview.innerHTML = `<div class="empty">Select a palette to build Markdown.</div>`;
@@ -700,6 +760,71 @@ Accent:
 
     function renderDiagramGuide() {
       elements.diagramGuideCode.textContent = DIAGRAM_GUIDE_MARKDOWN;
+    }
+
+    function selectedPromptTemplate() {
+      return promptTemplates.find((template) => template.id === selectedPromptId) || promptTemplates[0];
+    }
+
+    function selectedPromptMarkdown() {
+      const palette = selectedPalettes()[0];
+      const template = selectedPromptTemplate();
+      const themeRows = palette
+        ? [
+            `- Primary color: ${palette.primary}`,
+            `- Accent color: ${palette.accent}`,
+            `- Font: ${palette.font || "Use a clean system UI font"}`,
+          ]
+        : ["- Theme: No palette selected. Use a clean, neutral HTML theme."];
+
+      return [
+        template.text,
+        "",
+        "Theme:",
+        ...themeRows,
+        "",
+        "Use the theme consistently for typography, buttons, borders, emphasis, and section rhythm.",
+        "Return a single self-contained HTML file unless I ask for something else.",
+      ].join("\n");
+    }
+
+    function renderPromptSelector() {
+      if (!elements.promptTemplateList) return;
+
+      const palette = selectedPalettes()[0];
+      const template = selectedPromptTemplate();
+      elements.promptTemplateList.innerHTML = "";
+
+      const fragment = document.createDocumentFragment();
+      promptTemplates.forEach((item) => {
+        const button = document.createElement("button");
+        button.className = `prompt-card${item.id === template.id ? " selected" : ""}`;
+        button.type = "button";
+        button.dataset.promptId = item.id;
+        button.setAttribute("aria-pressed", item.id === template.id ? "true" : "false");
+        button.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.text}</p>
+        `;
+        fragment.appendChild(button);
+      });
+      elements.promptTemplateList.appendChild(fragment);
+
+      if (palette) {
+        elements.promptThemePreview.innerHTML = `
+          <div class="prompt-theme-name">${palette.company}</div>
+          <div class="prompt-theme-font">${palette.font || "Font not listed"}</div>
+          <div class="prompt-theme-swatches">
+            <span style="background:${palette.primary};color:${contrastInk(palette.primary)}">${palette.primary}</span>
+            <span style="background:${palette.accent};color:${contrastInk(palette.accent)}">${palette.accent}</span>
+          </div>
+        `;
+      } else {
+        elements.promptThemePreview.innerHTML = `<div class="empty">Select a palette to auto-fill the theme.</div>`;
+      }
+
+      elements.promptOutput.value = selectedPromptMarkdown();
+      elements.copyPromptBtn.disabled = !template;
     }
 
     function allMarkdown() {
@@ -944,6 +1069,22 @@ Accent:
 
     elements.targetPlatformOutput.addEventListener("click", () => {
       elements.targetPlatformOutput.select();
+    });
+
+    elements.promptTemplateList.addEventListener("click", (event) => {
+      const card = event.target.closest(".prompt-card");
+      if (!card) return;
+      selectedPromptId = card.dataset.promptId;
+      elements.promptStatus.textContent = "";
+      renderPromptSelector();
+    });
+
+    elements.copyPromptBtn.addEventListener("click", () => {
+      copyText(selectedPromptMarkdown(), elements.promptStatus);
+    });
+
+    elements.promptOutput.addEventListener("click", () => {
+      elements.promptOutput.select();
     });
 
     elements.copyDiagramGuideBtn.addEventListener("click", () => {
