@@ -290,11 +290,6 @@ textarea:focus {
   font-size: 0.86rem;
 }
 
-.mini-actions {
-  display: flex;
-  gap: 4px;
-}
-
 .meta {
   display: grid;
   gap: 6px;

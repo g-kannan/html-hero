@@ -525,10 +525,6 @@ Accent:
       return items.length ? toMarkdown(items, { includeHeaders: false }) : "No palette selected.";
     }
 
-    function buttonIcon(path) {
-      return `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
-    }
-
     function renderGrid() {
       const items = palettes;
       elements.paletteGrid.innerHTML = "";
@@ -552,9 +548,6 @@ Accent:
                 <h3 class="company">${item.company}</h3>
                 <p class="font">${item.font || "No font listed"}</p>
               </div>
-              <span class="mini-actions" aria-hidden="true">
-                <span class="btn ghost" title="Copy this palette">${buttonIcon('<path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>')}</span>
-              </span>
             </div>
             <div class="meta">
               <div class="meta-row"><span>Primary</span><span class="chip"><span class="dot" style="background:${item.primary}"></span>${item.primary}</span></div>
