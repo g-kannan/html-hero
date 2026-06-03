@@ -331,6 +331,10 @@
               <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
               Copy
             </button>
+            <a id="openDiagramGuideLink" class="btn secondary" href="https://archicons.oltpdba.workers.dev/architecture_diagram_guide.md" target="_blank" rel="noopener" title="Open hosted architecture diagram guide">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 4h6v6m0-6-9 9M10 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Open hosted
+            </a>
             <button id="downloadDiagramGuideBtn" class="btn secondary" type="button" title="Download architecture diagram guide as Markdown">
               <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Download
@@ -353,6 +357,23 @@ Create professional technical architecture diagrams as self-contained HTML files
 Use SF Mono if given as part of input
 
 Font sizes: 14px for component names, 11px for sublabels, 10px for annotations, 9px (Strictly Uppercase)
+
+### Color System
+
+Default to a light architecture canvas unless the user explicitly asks for a dark theme.
+
+Use the provided palette as role colors, not as the full page theme:
+- `primary` is for boundary strokes, active states, selected nodes, and key labels.
+- `accent` is for flow arrows, warnings, emphasis, and the most important path.
+- Page background: `#F7F8FC` or near-white.
+- Diagram canvas: `#FFFFFF`.
+- Component surfaces: `#FFFFFF` with subtle tinted fills such as `color-mix(in srgb, primary 6%, white)`.
+- Text: dark neutral ink such as `#111827`; secondary text: `#5B6170`.
+- Borders/grid: quiet neutral lines such as `#DDE2EB`.
+
+Do not use black, near-black, navy, or radial dark gradients as the default body/SVG background. Do not infer "blueprint" styling from cloud architecture unless the user asks for blueprint, dark mode, neon, terminal, cyber, or night presentation styling.
+
+If a dark theme is explicitly requested, still keep labels high-contrast and avoid letting saturated primary/accent colors dominate every surface.
 
 ## Logo usage
 Architecture diagram icons are available from the Archicons registry:
@@ -446,7 +467,7 @@ SVG viewBox height: at least 560 to fit legend
 
 ### Export Toolbar (built-in)
 
-Every diagram ships with a single unobtrusive `⋯` toggle in the header. Click it to reveal three buttons — 📋 Copy (high-DPI PNG to clipboard, scale: 2), 🖼️ PNG (high-DPI PNG download), 📄 PDF (PNG embedded in a one-page PDF via jsPDF). The toolbar collapses back to the icon by default so it doesn't clutter the diagram. All three formats use the same html2canvas capture (with the toolbar excluded and 32px padding around the content), so PDF preserves the dark theme without going through the browser's print dialog.
+Every diagram ships with a single unobtrusive `⋯` toggle in the header. Click it to reveal three buttons — 📋 Copy (high-DPI PNG to clipboard, scale: 2), 🖼️ PNG (high-DPI PNG download), 📄 PDF (PNG embedded in a one-page PDF via jsPDF). The toolbar collapses back to the icon by default so it doesn't clutter the diagram. All three formats use the same html2canvas capture (with the toolbar excluded and 32px padding around the content), so PDF preserves the rendered theme without going through the browser's print dialog.
 
 When generating a new diagram, keep these intact in the template:
 - The two CDN scripts in `<head>` (pinned versions, with Subresource Integrity hashes and `crossorigin="anonymous"`):
@@ -464,6 +485,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
+- CSS custom properties for theme roles: `--primary`, `--accent`, `--page-bg`, `--canvas-bg`, `--surface`, `--ink`, `--muted`, and `--line`
 - Inline SVG shapes and inline Archicons SVG markup only. Do not use external SVG `<image href="...">` references for logos/icons in exportable PNG/PDF diagrams.
 - No JavaScript required for diagram animations; the export toolbar JavaScript is permitted.
 
@@ -611,7 +633,8 @@ Accent:
       consumptionLayers: [],
       customConsumptionLayer: "",
     };
-    const DIAGRAM_GUIDE_MARKDOWN = elements.diagramGuideSource.textContent.trim();
+    const DIAGRAM_GUIDE_URL = "https://cdn.jsdelivr.net/gh/g-kannan/archicons@main/architecture_diagram_guide.md";
+    let diagramGuideMarkdown = elements.diagramGuideSource.textContent.trim();
 
     function normalizeHex(value) {
       const clean = String(value || "").trim();
@@ -902,7 +925,25 @@ Accent:
     }
 
     function renderDiagramGuide() {
-      elements.diagramGuideCode.textContent = DIAGRAM_GUIDE_MARKDOWN;
+      elements.diagramGuideCode.textContent = diagramGuideMarkdown;
+    }
+
+    async function loadHostedDiagramGuide() {
+      if (window.location.protocol === "file:") {
+        return;
+      }
+
+      try {
+        const response = await fetch(DIAGRAM_GUIDE_URL, { cache: "no-store" });
+        if (!response.ok) return;
+        const markdown = (await response.text()).trim();
+        if (!markdown) return;
+        diagramGuideMarkdown = markdown;
+        renderDiagramGuide();
+        elements.diagramGuideStatus.className = "status";
+        elements.diagramGuideStatus.textContent = "Hosted guide loaded.";
+      } catch (error) {
+      }
     }
 
     function selectedPromptTemplate() {
@@ -917,6 +958,8 @@ Accent:
             `- Primary color: ${palette.primary}`,
             `- Accent color: ${palette.accent}`,
             `- Font: ${palette.font || "Use a clean system UI font"}`,
+            "- Default theme mode: light canvas with near-white page background, white component surfaces, dark neutral text, and quiet neutral borders.",
+            "- Use primary/accent as role colors for boundaries, active states, arrows, and emphasis. Do not use them as a dark full-page background unless explicitly requested.",
           ]
         : ["- Theme: No palette selected. Use a clean, neutral HTML theme."];
 
@@ -927,6 +970,7 @@ Accent:
         ...themeRows,
         "",
         "Use the theme consistently for typography, buttons, borders, emphasis, and section rhythm.",
+        "Do not infer a dark, blueprint, neon, terminal, or night theme unless I explicitly request that mode.",
         "Return a single self-contained HTML file unless I ask for something else.",
       ].join("\n");
     }
@@ -1284,11 +1328,11 @@ Accent:
     });
 
     elements.copyDiagramGuideBtn.addEventListener("click", () => {
-      copyText(DIAGRAM_GUIDE_MARKDOWN, elements.diagramGuideStatus);
+      copyText(diagramGuideMarkdown, elements.diagramGuideStatus);
     });
 
     elements.downloadDiagramGuideBtn.addEventListener("click", () => {
-      downloadText("architecture_diagram_guide.md", DIAGRAM_GUIDE_MARKDOWN, elements.diagramGuideStatus);
+      downloadText("architecture_diagram_guide.md", diagramGuideMarkdown, elements.diagramGuideStatus);
     });
 
     elements.copyAllBtn.addEventListener("click", () => {
@@ -1317,6 +1361,7 @@ Accent:
     renderArchitecture();
     renderTargetPlatform();
     renderDiagramGuide();
+    loadHostedDiagramGuide();
     loadInitialMarkdown();
   </script>
 </body>
