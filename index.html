@@ -60,7 +60,7 @@
         <section class="selection architecture-form" aria-labelledby="workloadTitle">
           <div class="panel-title">
             <h2 id="workloadTitle">Workload Inputs</h2>
-            <button id="copyArchitectureBtn" class="btn" type="button" title="Copy workload inputs as Markdown">
+            <button id="copyArchitectureBtn" class="btn" type="button" title="Copy workload and diagram options as Markdown">
               <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
               Copy
             </button>
@@ -97,7 +97,7 @@
             <div class="field">
               <label for="totalVolume">Total Data Volume</label>
               <div class="input-row">
-                <input id="totalVolume" class="number-input" type="number" min="0" step="1" value="2">
+                <input id="totalVolume" class="number-input" type="number" min="0" step="1" value="100">
                 <div class="segmented" role="group" aria-label="Total data volume unit">
                   <button class="segment active" type="button" data-volume-unit="GB">GB</button>
                   <button class="segment" type="button" data-volume-unit="TB">TB</button>
@@ -116,6 +116,11 @@
               </div>
             </div>
 
+            <div class="field">
+              <label for="existingEtlPipelineCount">Existing ETL Pipeline Count</label>
+              <input id="existingEtlPipelineCount" class="number-input" type="number" min="0" step="1" value="0">
+            </div>
+
             <fieldset class="field">
               <legend>Load Type From Source</legend>
               <div class="segmented wide" role="group" aria-label="Load type from source">
@@ -127,19 +132,46 @@
 
             <div class="field range-field">
               <label for="streamingMix">Workload Mix</label>
-              <input id="streamingMix" type="range" min="0" max="100" step="5" value="35">
+              <input id="streamingMix" type="range" min="0" max="100" step="5" value="0">
               <div class="range-readout">
-                <span id="streamingValue">Streaming 35%</span>
-                <span id="batchValue">Batch 65%</span>
+                <span id="streamingValue">Streaming 0%</span>
+                <span id="batchValue">Batch 100%</span>
               </div>
             </div>
 
-            <fieldset class="field">
-              <legend>Line Animation</legend>
-              <label class="toggle-row">
-                <input id="lineAnimation" type="checkbox" checked>
-                <span>Animated lines</span>
-              </label>
+            <fieldset class="field full diagram-options">
+              <legend>Diagram Options</legend>
+              <div class="checkbox-grid">
+                <label class="toggle-row">
+                  <input id="lineAnimation" type="checkbox" checked>
+                  <span>Animated lines</span>
+                </label>
+                <label class="toggle-row">
+                  <input id="showLegend" type="checkbox" checked>
+                  <span>Show legend</span>
+                </label>
+                <label class="toggle-row">
+                  <input id="showWorkloadSummary" type="checkbox" checked>
+                  <span>Show workload summary</span>
+                </label>
+              </div>
+              <div class="diagram-option-grid">
+                <div class="detail-field">
+                  <label>Diagram Density</label>
+                  <div class="segmented wide" role="group" aria-label="Diagram density">
+                    <button class="segment" type="button" data-diagram-density="Compact">Compact</button>
+                    <button class="segment active" type="button" data-diagram-density="Balanced">Balanced</button>
+                    <button class="segment" type="button" data-diagram-density="Detailed">Detailed</button>
+                  </div>
+                </div>
+                <div class="detail-field">
+                  <label>Layout Direction</label>
+                  <div class="segmented" role="group" aria-label="Layout direction">
+                    <button class="segment active" type="button" data-layout-direction="Left-to-right">Left-to-right</button>
+                    <button class="segment" type="button" data-layout-direction="Top-to-bottom">Top-to-bottom</button>
+                  </div>
+                </div>
+              </div>
             </fieldset>
           </div>
         </section>
@@ -147,9 +179,9 @@
         <aside class="side">
           <section class="selection" aria-labelledby="workloadMarkdownTitle">
             <div class="panel-title">
-              <h2 id="workloadMarkdownTitle">Workload Markdown</h2>
+              <h2 id="workloadMarkdownTitle">Workload + Diagram Markdown</h2>
             </div>
-            <textarea id="architectureOutput" class="markdown-output" readonly aria-label="Workload inputs as Markdown"></textarea>
+            <textarea id="architectureOutput" class="markdown-output" readonly aria-label="Workload inputs and diagram options as Markdown"></textarea>
             <p id="architectureStatus" class="status" aria-live="polite"></p>
           </section>
         </aside>
@@ -177,12 +209,13 @@
               </div>
             </fieldset>
 
-            <fieldset class="field">
+            <fieldset class="field full">
               <legend>Data Platform</legend>
-              <div class="segmented wide" role="group" aria-label="Data platform">
+              <div class="segmented four" role="group" aria-label="Data platform">
                 <button class="segment active" type="button" data-data-platform="None">None</button>
                 <button class="segment" type="button" data-data-platform="Databricks">Databricks</button>
                 <button class="segment" type="button" data-data-platform="Snowflake">Snowflake</button>
+                <button class="segment" type="button" data-data-platform="BigQuery">BigQuery</button>
               </div>
             </fieldset>
 
@@ -192,10 +225,24 @@
                 <label class="choice"><input type="checkbox" name="etlTool" value="Glue"> Glue</label>
                 <label class="choice"><input type="checkbox" name="etlTool" value="EMR"> EMR</label>
                 <label class="choice"><input type="checkbox" name="etlTool" value="AppFlow"> AppFlow</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="Lakeflow Jobs"> Lakeflow Jobs</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="ADF"> ADF</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="Datastream"> Datastream</label>
+                <label class="choice"><input type="checkbox" name="etlTool" value="Data Proc"> Data Proc</label>
                 <label class="choice"><input type="checkbox" name="etlTool" value="Containers"> Containers</label>
                 <label class="choice"><input id="customEtlToolToggle" type="checkbox" name="etlTool" value="Custom"> Custom</label>
               </div>
               <input id="customEtlToolInput" class="text-input custom-source" type="text" placeholder="Custom ETL tool name" hidden>
+            </fieldset>
+
+            <fieldset class="field full">
+              <legend>Orchestrator</legend>
+              <div class="checkbox-grid">
+                <label class="choice"><input type="checkbox" name="orchestrator" value="Airflow"> Airflow</label>
+                <label class="choice"><input type="checkbox" name="orchestrator" value="Dagster"> Dagster</label>
+                <label class="choice"><input id="customOrchestratorToggle" type="checkbox" name="orchestrator" value="Custom"> Custom</label>
+              </div>
+              <input id="customOrchestratorInput" class="text-input custom-source" type="text" placeholder="Custom orchestrator name" hidden>
             </fieldset>
 
             <div class="field">
@@ -229,7 +276,9 @@
                 <label class="choice"><input type="checkbox" name="consumptionLayer" value="PowerBI"> PowerBI</label>
                 <label class="choice"><input type="checkbox" name="consumptionLayer" value="Looker"> Looker</label>
                 <label class="choice"><input type="checkbox" name="consumptionLayer" value="Databricks Genie"> Databricks Genie</label>
+                <label class="choice"><input id="customConsumptionLayerToggle" type="checkbox" name="consumptionLayer" value="Custom"> Custom</label>
               </div>
+              <input id="customConsumptionLayerInput" class="text-input custom-source" type="text" placeholder="Custom consumption layer name" hidden>
             </fieldset>
           </div>
         </section>
@@ -461,11 +510,16 @@ Accent:
       totalVolumeUnits: document.querySelectorAll("[data-volume-unit]"),
       dailyVolume: document.querySelector("#dailyVolume"),
       dailyVolumeUnits: document.querySelectorAll("[data-daily-unit]"),
+      existingEtlPipelineCount: document.querySelector("#existingEtlPipelineCount"),
       loadTypeButtons: document.querySelectorAll("[data-load-type]"),
       streamingMix: document.querySelector("#streamingMix"),
       streamingValue: document.querySelector("#streamingValue"),
       batchValue: document.querySelector("#batchValue"),
       lineAnimation: document.querySelector("#lineAnimation"),
+      showLegend: document.querySelector("#showLegend"),
+      showWorkloadSummary: document.querySelector("#showWorkloadSummary"),
+      diagramDensityButtons: document.querySelectorAll("[data-diagram-density]"),
+      layoutDirectionButtons: document.querySelectorAll("[data-layout-direction]"),
       architectureOutput: document.querySelector("#architectureOutput"),
       copyArchitectureBtn: document.querySelector("#copyArchitectureBtn"),
       architectureStatus: document.querySelector("#architectureStatus"),
@@ -473,10 +527,13 @@ Accent:
       dataPlatformButtons: document.querySelectorAll("[data-data-platform]"),
       etlToolInputs: document.querySelectorAll('input[name="etlTool"]'),
       customEtlToolInput: document.querySelector("#customEtlToolInput"),
+      orchestratorInputs: document.querySelectorAll('input[name="orchestrator"]'),
+      customOrchestratorInput: document.querySelector("#customOrchestratorInput"),
       storageOutput: document.querySelector("#storageOutput"),
       tableFormatInputs: document.querySelectorAll('input[name="tableFormat"]'),
       catalogButtons: document.querySelectorAll("[data-catalog]"),
       consumptionLayerInputs: document.querySelectorAll('input[name="consumptionLayer"]'),
+      customConsumptionLayerInput: document.querySelector("#customConsumptionLayerInput"),
       targetPlatformOutput: document.querySelector("#targetPlatformOutput"),
       copyTargetPlatformBtn: document.querySelector("#copyTargetPlatformBtn"),
       targetPlatformStatus: document.querySelector("#targetPlatformStatus"),
@@ -527,22 +584,32 @@ Accent:
       sources: [],
       customSource: "",
       rdbmsType: "",
-      totalVolume: "2",
+      totalVolume: "100",
       totalVolumeUnit: "GB",
       dailyVolume: "500000",
       dailyVolumeUnit: "Rows",
+      existingEtlPipelineCount: "0",
       loadType: "Full",
-      streamingPercent: 35,
+      streamingPercent: 0,
+    };
+    const diagramState = {
       lineAnimation: true,
+      showLegend: true,
+      showWorkloadSummary: true,
+      diagramDensity: "Balanced",
+      layoutDirection: "Left-to-right",
     };
     const targetPlatformState = {
       cloud: "AWS",
       dataPlatform: "None",
       etlTools: [],
       customEtlTool: "",
+      orchestrators: [],
+      customOrchestrator: "",
       tableFormats: [],
       catalog: "None",
       consumptionLayers: [],
+      customConsumptionLayer: "",
     };
     const DIAGRAM_GUIDE_MARKDOWN = elements.diagramGuideSource.textContent.trim();
 
@@ -697,9 +764,9 @@ Accent:
       return architectureSources().length > 0 ||
         architectureState.totalVolume ||
         architectureState.dailyVolume ||
+        architectureState.existingEtlPipelineCount ||
         architectureState.loadType ||
-        architectureState.streamingPercent !== null ||
-        typeof architectureState.lineAnimation === "boolean";
+        architectureState.streamingPercent !== null;
     }
 
     function renderArchitectureMarkdown() {
@@ -714,9 +781,9 @@ Accent:
         ["Data Sources", sources.length ? sources.join(", ") : "Not specified"],
         ["Total Data Volume", architectureState.totalVolume ? `${architectureState.totalVolume} ${architectureState.totalVolumeUnit}` : "Not specified"],
         ["Daily Volume", architectureState.dailyVolume ? `${architectureState.dailyVolume} ${architectureState.dailyVolumeUnit}` : "Not specified"],
+        ["Existing ETL Pipeline Count", architectureState.existingEtlPipelineCount || "0"],
         ["Load Type", architectureState.loadType],
         ["Workload Mix", `Streaming ${streaming}% / Batch ${batch}%`],
-        ["Line Animation", architectureState.lineAnimation ? "On" : "Off"],
       ];
 
       return [
@@ -726,13 +793,39 @@ Accent:
       ].join("\n");
     }
 
+    function renderDiagramOptionsMarkdown() {
+      const rows = [
+        ["Line Animation", diagramState.lineAnimation ? "On" : "Off"],
+        ["Diagram Density", diagramState.diagramDensity],
+        ["Layout Direction", diagramState.layoutDirection],
+        ["Show Legend", diagramState.showLegend ? "On" : "Off"],
+        ["Show Workload Summary", diagramState.showWorkloadSummary ? "On" : "Off"],
+      ];
+
+      return [
+        "| Field | Value |",
+        "| --- | --- |",
+        ...rows.map((row) => `| ${row[0]} | ${row[1]} |`),
+      ].join("\n");
+    }
+
+    function renderArchitecturePanelMarkdown() {
+      return [
+        "## Workload Inputs",
+        renderArchitectureMarkdown(),
+        "",
+        "## Diagram Options",
+        renderDiagramOptionsMarkdown(),
+      ].join("\n");
+    }
+
     function renderArchitecture() {
       const streaming = Number(architectureState.streamingPercent);
       elements.streamingValue.textContent = `Streaming ${streaming}%`;
       elements.batchValue.textContent = `Batch ${100 - streaming}%`;
       elements.rdbmsTypeGroup.hidden = !architectureState.sources.includes("RDBMS");
       elements.customSourceInput.hidden = !architectureState.sources.includes("Custom");
-      elements.architectureOutput.value = renderArchitectureMarkdown();
+      elements.architectureOutput.value = renderArchitecturePanelMarkdown();
     }
 
     function targetStorageForCloud(cloud) {
@@ -762,16 +855,35 @@ Accent:
         });
     }
 
+    function targetOrchestrators() {
+      return targetPlatformState.orchestrators
+        .map((orchestrator) => {
+          if (orchestrator !== "Custom") return orchestrator;
+          return targetPlatformState.customOrchestrator.trim() || "Custom";
+        });
+    }
+
+    function targetConsumptionLayers() {
+      return targetPlatformState.consumptionLayers
+        .map((layer) => {
+          if (layer !== "Custom") return layer;
+          return targetPlatformState.customConsumptionLayer.trim() || "Custom";
+        });
+    }
+
     function renderTargetPlatformMarkdown() {
       const etlTools = targetEtlTools();
+      const orchestrators = targetOrchestrators();
+      const consumptionLayers = targetConsumptionLayers();
       const rows = [
         ["Target Cloud", targetPlatformState.cloud],
         ["Data Platform", targetPlatformState.dataPlatform],
         ["ETL Tool", etlTools.length ? etlTools.join(", ") : "None"],
+        ["Orchestrator", orchestrators.length ? orchestrators.join(", ") : "None"],
         ["Storage", targetStorageForCloud(targetPlatformState.cloud)],
         ["Table Formats", targetPlatformState.tableFormats.length ? targetPlatformState.tableFormats.join(", ") : "None"],
         ["Catalog", targetPlatformState.catalog],
-        ["Consumption Layer", targetPlatformState.consumptionLayers.length ? targetPlatformState.consumptionLayers.join(", ") : "None"],
+        ["Consumption Layer", consumptionLayers.length ? consumptionLayers.join(", ") : "None"],
       ];
 
       return [
@@ -783,6 +895,8 @@ Accent:
 
     function renderTargetPlatform() {
       elements.customEtlToolInput.hidden = !targetPlatformState.etlTools.includes("Custom");
+      elements.customOrchestratorInput.hidden = !targetPlatformState.orchestrators.includes("Custom");
+      elements.customConsumptionLayerInput.hidden = !targetPlatformState.consumptionLayers.includes("Custom");
       elements.storageOutput.textContent = targetStorageForCloud(targetPlatformState.cloud);
       elements.targetPlatformOutput.value = renderTargetPlatformMarkdown();
     }
@@ -879,6 +993,9 @@ Accent:
         "## Workload Inputs",
         renderArchitectureMarkdown(),
         "",
+        "## Diagram Options",
+        renderDiagramOptionsMarkdown(),
+        "",
         "## Target Platform",
         renderTargetPlatformMarkdown(),
       ].join("\n");
@@ -955,8 +1072,15 @@ Accent:
       architectureState.rdbmsType = elements.rdbmsTypeInput.value;
       architectureState.totalVolume = elements.totalVolume.value;
       architectureState.dailyVolume = elements.dailyVolume.value;
+      architectureState.existingEtlPipelineCount = elements.existingEtlPipelineCount.value;
       architectureState.streamingPercent = Number(elements.streamingMix.value);
-      architectureState.lineAnimation = elements.lineAnimation.checked;
+      renderArchitecture();
+    }
+
+    function syncDiagramState() {
+      diagramState.lineAnimation = elements.lineAnimation.checked;
+      diagramState.showLegend = elements.showLegend.checked;
+      diagramState.showWorkloadSummary = elements.showWorkloadSummary.checked;
       renderArchitecture();
     }
 
@@ -965,12 +1089,17 @@ Accent:
         .filter((input) => input.checked)
         .map((input) => input.value);
       targetPlatformState.customEtlTool = elements.customEtlToolInput.value;
+      targetPlatformState.orchestrators = Array.from(elements.orchestratorInputs)
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+      targetPlatformState.customOrchestrator = elements.customOrchestratorInput.value;
       targetPlatformState.tableFormats = Array.from(elements.tableFormatInputs)
         .filter((input) => input.checked)
         .map((input) => input.value);
       targetPlatformState.consumptionLayers = Array.from(elements.consumptionLayerInputs)
         .filter((input) => input.checked)
         .map((input) => input.value);
+      targetPlatformState.customConsumptionLayer = elements.customConsumptionLayerInput.value;
       renderTargetPlatform();
     }
 
@@ -1032,8 +1161,11 @@ Accent:
     elements.resetSourcesBtn.addEventListener("click", resetDataSources);
     elements.totalVolume.addEventListener("input", syncArchitectureState);
     elements.dailyVolume.addEventListener("input", syncArchitectureState);
+    elements.existingEtlPipelineCount.addEventListener("input", syncArchitectureState);
     elements.streamingMix.addEventListener("input", syncArchitectureState);
-    elements.lineAnimation.addEventListener("change", syncArchitectureState);
+    elements.lineAnimation.addEventListener("change", syncDiagramState);
+    elements.showLegend.addEventListener("change", syncDiagramState);
+    elements.showWorkloadSummary.addEventListener("change", syncDiagramState);
 
     elements.totalVolumeUnits.forEach((button) => {
       button.addEventListener("click", () => {
@@ -1059,8 +1191,24 @@ Accent:
       });
     });
 
+    elements.diagramDensityButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.diagramDensity = button.dataset.diagramDensity;
+        activateSegment(elements.diagramDensityButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.layoutDirectionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.layoutDirection = button.dataset.layoutDirection;
+        activateSegment(elements.layoutDirectionButtons, button);
+        renderArchitecture();
+      });
+    });
+
     elements.copyArchitectureBtn.addEventListener("click", () => {
-      copyText(renderArchitectureMarkdown(), elements.architectureStatus);
+      copyText(renderArchitecturePanelMarkdown(), elements.architectureStatus);
     });
 
     elements.targetCloudButtons.forEach((button) => {
@@ -1091,6 +1239,11 @@ Accent:
     });
     elements.customEtlToolInput.addEventListener("input", syncTargetPlatformState);
 
+    elements.orchestratorInputs.forEach((input) => {
+      input.addEventListener("change", syncTargetPlatformState);
+    });
+    elements.customOrchestratorInput.addEventListener("input", syncTargetPlatformState);
+
     elements.tableFormatInputs.forEach((input) => {
       input.addEventListener("change", syncTargetPlatformState);
     });
@@ -1104,6 +1257,7 @@ Accent:
     elements.consumptionLayerInputs.forEach((input) => {
       input.addEventListener("change", syncTargetPlatformState);
     });
+    elements.customConsumptionLayerInput.addEventListener("input", syncTargetPlatformState);
 
     elements.copyTargetPlatformBtn.addEventListener("click", () => {
       copyText(renderTargetPlatformMarkdown(), elements.targetPlatformStatus);
