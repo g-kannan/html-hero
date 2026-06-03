@@ -14,11 +14,11 @@ Architecture diagram icons are available from the Archicons registry:
 https://archicons.oltpdba.workers.dev/registry.json
 
 Use the registry to find icons by `id`, `name`, `provider`, or `category`.
-Each icon entry includes a ready-to-use hosted SVG URL in the `url` field.
+Each icon entry includes a hosted SVG URL in the `url` field.
 
-When inserting an icon for browser-only display, use the icon's `url` value directly.
+Do not use hosted icon URLs as SVG `<image href="...">` references in exportable diagrams.
 
-For diagrams that include PNG/PDF export, embed the registry SVG paths inline as plain `<svg>`, `<rect>`, and `<path>` elements. External SVG files referenced through `<image href="...">`, and sometimes `<symbol>/<use>` references, can display correctly in the browser but export as broken-image placeholders in html2canvas captures.
+For diagrams that include PNG/PDF export, fetch the icon SVG during generation and paste the SVG markup inline inside the diagram. Keep the icon as plain inline `<svg>`, `<g>`, `<path>`, `<rect>`, `<circle>`, `<polygon>`, and related SVG shape elements. External SVG files referenced through `<image href="...">`, and sometimes `<symbol>/<use>` references, can display correctly in the browser but export as broken-image placeholders in html2canvas captures.
 
 Example registry entry:
 
@@ -33,13 +33,26 @@ Example registry entry:
 
 Only use an icon if the logo is available in the registry. Do not create custom or mock logos.
 
-Hosted SVG image references are acceptable only when export fidelity is not required:
+Wrong for exportable diagrams:
 
 ```html
 <image href="https://archicons.oltpdba.workers.dev/icons/aws/aws-glue.svg" x="18" y="16" width="28" height="28" preserveAspectRatio="xMidYMid meet"></image>
 ```
 
-Keep `useCORS: true` in html2canvas captures for any remaining CDN-hosted assets, but do not rely on it to fix external SVG icon export.
+Right for exportable diagrams:
+
+```html
+<svg x="18" y="16" width="28" height="28" viewBox="0 0 80 80" aria-label="AWS Glue">
+  <!-- Paste the real registry SVG paths/shapes here. Do not use external image hrefs. -->
+</svg>
+```
+
+Use `useCORS: true` in html2canvas captures for any remaining CDN-hosted non-SVG assets, but do not rely on it for Archicons SVG export. The Archicons SVG responses may not include browser CORS headers, so external icon references are not export-safe.
+
+Export preflight before final output:
+- Search the generated HTML for `<image`, `href="https://archicons`, and `xlink:href="https://archicons`
+- If any are present, replace them with inline SVG markup before returning the file
+- A generated exportable diagram should have `document.querySelectorAll("svg image").length === 0`
 
 ### Workload Inputs Placement
 
@@ -105,7 +118,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
-- Inline SVG shapes and optional Archicons CDN SVG `<image>` references only. For exportable PNG/PDF diagrams, inline icon SVG paths instead of referencing CDN SVGs with `<image>`.
-- No JavaScript required (pure CSS animations)
+- Inline SVG shapes and inline Archicons SVG markup only. Do not use external SVG `<image href="...">` references for logos/icons in exportable PNG/PDF diagrams.
+- No JavaScript required for diagram animations; the export toolbar JavaScript is permitted.
 
 The file should render correctly when opened directly in any modern browser. The export toolbar uses two CDN scripts (html2canvas and jsPDF) — no other JavaScript dependencies.
