@@ -106,6 +106,6 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
 - Inline SVG shapes and optional Archicons CDN SVG `<image>` references only. For exportable PNG/PDF diagrams, inline icon SVG paths instead of referencing CDN SVGs with `<image>`.
-- No JavaScript required (pure CSS animations)
+- No JavaScript required for diagram animations; the export toolbar JavaScript is permitted.
 
 The file should render correctly when opened directly in any modern browser. The export toolbar uses two CDN scripts (html2canvas and jsPDF) — no other JavaScript dependencies.
