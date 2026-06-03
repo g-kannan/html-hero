@@ -633,6 +633,7 @@ Accent:
       consumptionLayers: [],
       customConsumptionLayer: "",
     };
+    const HOSTED_DIAGRAM_GUIDE_URL = "https://archicons.oltpdba.workers.dev/architecture_diagram_guide.md";
     const DIAGRAM_GUIDE_URL = "https://cdn.jsdelivr.net/gh/g-kannan/archicons@main/architecture_diagram_guide.md";
     let diagramGuideMarkdown = elements.diagramGuideSource.textContent.trim();
 
@@ -1042,6 +1043,11 @@ Accent:
         "",
         "## Target Platform",
         renderTargetPlatformMarkdown(),
+        "",
+        "## Architecture Diagram Guide",
+        `Use this hosted guide when generating the architecture diagram: ${HOSTED_DIAGRAM_GUIDE_URL}`,
+        "",
+        "Instruction for the model: follow the hosted architecture guide for layout, color roles, icon usage, export behavior, and diagram constraints.",
       ].join("\n");
     }
 
