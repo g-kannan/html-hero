@@ -8,6 +8,23 @@ Use SF Mono if given as part of input
 
 Font sizes: 14px for component names, 11px for sublabels, 10px for annotations, 9px (Strictly Uppercase)
 
+### Color System
+
+Default to a light architecture canvas unless the user explicitly asks for a dark theme.
+
+Use the provided palette as role colors, not as the full page theme:
+- `primary` is for boundary strokes, active states, selected nodes, and key labels.
+- `accent` is for flow arrows, warnings, emphasis, and the most important path.
+- Page background: `#F7F8FC` or near-white.
+- Diagram canvas: `#FFFFFF`.
+- Component surfaces: `#FFFFFF` with subtle tinted fills such as `color-mix(in srgb, primary 6%, white)`.
+- Text: dark neutral ink such as `#111827`; secondary text: `#5B6170`.
+- Borders/grid: quiet neutral lines such as `#DDE2EB`.
+
+Do not use black, near-black, navy, or radial dark gradients as the default body/SVG background. Do not infer "blueprint" styling from cloud architecture unless the user asks for blueprint, dark mode, neon, terminal, cyber, or night presentation styling.
+
+If a dark theme is explicitly requested, still keep labels high-contrast and avoid letting saturated primary/accent colors dominate every surface.
+
 ## Logo usage
 Architecture diagram icons are available from the Archicons registry:
 
@@ -100,7 +117,7 @@ SVG viewBox height: at least 560 to fit legend
 
 ### Export Toolbar (built-in)
 
-Every diagram ships with a single unobtrusive `⋯` toggle in the header. Click it to reveal three buttons — 📋 Copy (high-DPI PNG to clipboard, scale: 2), 🖼️ PNG (high-DPI PNG download), 📄 PDF (PNG embedded in a one-page PDF via jsPDF). The toolbar collapses back to the icon by default so it doesn't clutter the diagram. All three formats use the same html2canvas capture (with the toolbar excluded and 32px padding around the content), so PDF preserves the dark theme without going through the browser's print dialog.
+Every diagram ships with a single unobtrusive `⋯` toggle in the header. Click it to reveal three buttons — 📋 Copy (high-DPI PNG to clipboard, scale: 2), 🖼️ PNG (high-DPI PNG download), 📄 PDF (PNG embedded in a one-page PDF via jsPDF). The toolbar collapses back to the icon by default so it doesn't clutter the diagram. All three formats use the same html2canvas capture (with the toolbar excluded and 32px padding around the content), so PDF preserves the rendered theme without going through the browser's print dialog.
 
 When generating a new diagram, keep these intact in the template:
 - The two CDN scripts in `<head>` (pinned versions, with Subresource Integrity hashes and `crossorigin="anonymous"`):
@@ -118,6 +135,7 @@ Caveats: clipboard API needs a user gesture and a secure context (https/file/loc
 
 Always produce a single self-contained `.html` file with:
 - Embedded CSS (no external stylesheets except Google Fonts)
+- CSS custom properties for theme roles: `--primary`, `--accent`, `--page-bg`, `--canvas-bg`, `--surface`, `--ink`, `--muted`, and `--line`
 - Inline SVG shapes and inline Archicons SVG markup only. Do not use external SVG `<image href="...">` references for logos/icons in exportable PNG/PDF diagrams.
 - No JavaScript required for diagram animations; the export toolbar JavaScript is permitted.
 
