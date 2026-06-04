@@ -1,1 +1,1 @@
-# html-hero
+# Solution Design Studio
