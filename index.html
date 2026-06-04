@@ -18,6 +18,10 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
           Copy Architecture Inputs
         </button>
+        <button id="copyFlowBtn" class="btn secondary" type="button" title="Copy dataflow/process diagram inputs as Markdown">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Copy Flow Inputs
+        </button>
       </div>
     </header>
 
@@ -141,6 +145,15 @@
 
             <fieldset class="field full diagram-options">
               <legend>Diagram Options</legend>
+              <div class="diagram-option-grid">
+                <div class="detail-field">
+                  <label>Diagram Type</label>
+                  <div class="segmented wide" role="group" aria-label="Diagram type">
+                    <button class="segment active" type="button" data-diagram-type="Architecture">Architecture diagram</button>
+                    <button class="segment" type="button" data-diagram-type="Flow">Flow diagram</button>
+                  </div>
+                </div>
+              </div>
               <div class="checkbox-grid">
                 <label class="toggle-row">
                   <input id="lineAnimation" type="checkbox" checked>
@@ -169,6 +182,41 @@
                   <div class="segmented" role="group" aria-label="Layout direction">
                     <button class="segment active" type="button" data-layout-direction="Left-to-right">Left-to-right</button>
                     <button class="segment" type="button" data-layout-direction="Top-to-bottom">Top-to-bottom</button>
+                  </div>
+                </div>
+              </div>
+              <div id="flowDiagramOptions" class="diagram-option-grid" hidden>
+                <div class="detail-field">
+                  <label>Flow Mode</label>
+                  <div class="segmented wide" role="group" aria-label="Flow mode">
+                    <button class="segment active" type="button" data-flow-mode="Auto">Auto</button>
+                    <button class="segment" type="button" data-flow-mode="Data flow">Data flow</button>
+                    <button class="segment" type="button" data-flow-mode="Process flow">Process flow</button>
+                    <button class="segment" type="button" data-flow-mode="Hybrid flow">Hybrid flow</button>
+                  </div>
+                </div>
+                <div class="detail-field">
+                  <label>Alignment</label>
+                  <div class="segmented wide" role="group" aria-label="Flow alignment">
+                    <button class="segment active" type="button" data-flow-alignment="Lanes">Lanes</button>
+                    <button class="segment" type="button" data-flow-alignment="Phases">Phases</button>
+                    <button class="segment" type="button" data-flow-alignment="Timeline">Timeline</button>
+                    <button class="segment" type="button" data-flow-alignment="Grid">Grid</button>
+                  </div>
+                </div>
+                <div class="detail-field">
+                  <label>Details Panel</label>
+                  <div class="segmented wide" role="group" aria-label="Flow details panel">
+                    <button class="segment active" type="button" data-flow-details-panel="Right">Right</button>
+                    <button class="segment" type="button" data-flow-details-panel="Bottom">Bottom</button>
+                    <button class="segment" type="button" data-flow-details-panel="Hidden">Hidden</button>
+                  </div>
+                </div>
+                <div class="detail-field">
+                  <label>Annotations</label>
+                  <div class="segmented wide" role="group" aria-label="Flow annotations">
+                    <button class="segment" type="button" data-flow-annotations="Off">Off</button>
+                    <button class="segment active" type="button" data-flow-annotations="On">On</button>
                   </div>
                 </div>
               </div>
@@ -513,6 +561,7 @@ Accent:
 
     const elements = {
       copyAllBtn: document.querySelector("#copyAllBtn"),
+      copyFlowBtn: document.querySelector("#copyFlowBtn"),
       copyAllStatus: document.querySelector("#copyAllStatus"),
       tabButtons: document.querySelectorAll(".tab-button"),
       tabPanels: document.querySelectorAll(".tab-panel"),
@@ -541,8 +590,14 @@ Accent:
       lineAnimation: document.querySelector("#lineAnimation"),
       showLegend: document.querySelector("#showLegend"),
       showWorkloadSummary: document.querySelector("#showWorkloadSummary"),
+      diagramTypeButtons: document.querySelectorAll("[data-diagram-type]"),
       diagramDensityButtons: document.querySelectorAll("[data-diagram-density]"),
       layoutDirectionButtons: document.querySelectorAll("[data-layout-direction]"),
+      flowDiagramOptions: document.querySelector("#flowDiagramOptions"),
+      flowModeButtons: document.querySelectorAll("[data-flow-mode]"),
+      flowAlignmentButtons: document.querySelectorAll("[data-flow-alignment]"),
+      flowDetailsPanelButtons: document.querySelectorAll("[data-flow-details-panel]"),
+      flowAnnotationsButtons: document.querySelectorAll("[data-flow-annotations]"),
       architectureOutput: document.querySelector("#architectureOutput"),
       copyArchitectureBtn: document.querySelector("#copyArchitectureBtn"),
       architectureStatus: document.querySelector("#architectureStatus"),
@@ -602,6 +657,11 @@ Accent:
         title: "Option comparison",
         text: "Turn this input into an HTML comparison matrix with trade-offs, impact, effort, and recommendation.",
       },
+      {
+        id: "dataflow-process-diagram",
+        title: "Dataflow / process diagram",
+        text: "Create a dataflow or process-flow diagram from this input as a single self-contained HTML file. Use this guide: https://archicons.oltpdba.workers.dev/flow_diagram_skill.md",
+      },
     ];
     const architectureState = {
       sources: [],
@@ -616,11 +676,16 @@ Accent:
       streamingPercent: 0,
     };
     const diagramState = {
+      diagramType: "Architecture",
       lineAnimation: true,
       showLegend: true,
       showWorkloadSummary: true,
       diagramDensity: "Balanced",
       layoutDirection: "Left-to-right",
+      flowMode: "Auto",
+      flowAlignment: "Lanes",
+      flowDetailsPanel: "Right",
+      flowAnnotations: "On",
     };
     const targetPlatformState = {
       cloud: "AWS",
@@ -635,6 +700,7 @@ Accent:
       customConsumptionLayer: "",
     };
     const HOSTED_DIAGRAM_GUIDE_URL = "https://archicons.oltpdba.workers.dev/architecture_diagram_guide.md";
+    const HOSTED_FLOW_GUIDE_URL = "https://archicons.oltpdba.workers.dev/flow_diagram_skill.md";
     const DIAGRAM_GUIDE_URL = "https://cdn.jsdelivr.net/gh/g-kannan/archicons@main/architecture_diagram_guide.md";
     let diagramGuideMarkdown = elements.diagramGuideSource.textContent.trim();
 
@@ -820,11 +886,43 @@ Accent:
 
     function renderDiagramOptionsMarkdown() {
       const rows = [
+        ["Diagram Type", `${diagramState.diagramType} diagram`],
         ["Line Animation", diagramState.lineAnimation ? "On" : "Off"],
         ["Diagram Density", diagramState.diagramDensity],
         ["Layout Direction", diagramState.layoutDirection],
         ["Show Legend", diagramState.showLegend ? "On" : "Off"],
         ["Show Workload Summary", diagramState.showWorkloadSummary ? "On" : "Off"],
+      ];
+
+      if (diagramState.diagramType === "Flow") {
+        rows.push(
+          ["Flow Mode", diagramState.flowMode],
+          ["Alignment", diagramState.flowAlignment],
+          ["Details Panel", diagramState.flowDetailsPanel],
+          ["Annotations", diagramState.flowAnnotations],
+          ["Flow Diagram Guide", HOSTED_FLOW_GUIDE_URL]
+        );
+      }
+
+      return [
+        "| Field | Value |",
+        "| --- | --- |",
+        ...rows.map((row) => `| ${row[0]} | ${row[1]} |`),
+      ].join("\n");
+    }
+
+    function renderFlowDiagramOptionsMarkdown() {
+      const rows = [
+        ["Diagram Type", "Flow diagram"],
+        ["Line Animation", diagramState.lineAnimation ? "On" : "Off"],
+        ["Diagram Density", diagramState.diagramDensity],
+        ["Layout Direction", diagramState.layoutDirection],
+        ["Show Workload Summary", diagramState.showWorkloadSummary ? "On" : "Off"],
+        ["Flow Mode", diagramState.flowMode],
+        ["Alignment", diagramState.flowAlignment],
+        ["Details Panel", diagramState.flowDetailsPanel],
+        ["Annotations", diagramState.flowAnnotations],
+        ["Flow Diagram Guide", HOSTED_FLOW_GUIDE_URL],
       ];
 
       return [
@@ -850,6 +948,7 @@ Accent:
       elements.batchValue.textContent = `Batch ${100 - streaming}%`;
       elements.rdbmsTypeGroup.hidden = !architectureState.sources.includes("RDBMS");
       elements.customSourceInput.hidden = !architectureState.sources.includes("Custom");
+      elements.flowDiagramOptions.hidden = diagramState.diagramType !== "Flow";
       elements.architectureOutput.value = renderArchitecturePanelMarkdown();
     }
 
@@ -965,6 +1064,15 @@ Accent:
           ]
         : ["- Theme: No palette selected. Use a clean, neutral HTML theme."];
 
+      if (template.id === "dataflow-process-diagram") {
+        return [
+          template.text,
+          "",
+          "Theme:",
+          ...themeRows,
+        ].join("\n");
+      }
+
       return [
         template.text,
         "",
@@ -1049,6 +1157,29 @@ Accent:
         `Use this hosted guide when generating the architecture diagram: ${HOSTED_DIAGRAM_GUIDE_URL}`,
         "",
         "Instruction for the model: follow the hosted architecture guide for layout, color roles, icon usage, export behavior, and diagram constraints.",
+      ].join("\n");
+    }
+
+    function flowMarkdown() {
+      return [
+        "# Dataflow / Process Flow Inputs",
+        "",
+        "## Palette",
+        selectedPaletteMarkdown(),
+        "",
+        "## Workload Inputs",
+        renderArchitectureMarkdown(),
+        "",
+        "## Diagram Options",
+        renderFlowDiagramOptionsMarkdown(),
+        "",
+        "## Target Platform",
+        renderTargetPlatformMarkdown(),
+        "",
+        "## Dataflow / Process Diagram Guide",
+        `Use this hosted guide when generating the dataflow or process diagram: ${HOSTED_FLOW_GUIDE_URL}`,
+        "",
+        "Instruction for the model: create a single self-contained HTML dataflow, process-flow, or hybrid-flow diagram based on the provided context. Use inline SVG for all diagram visuals, vanilla JavaScript for interactions, animated connectors when enabled, active node/path states, details panel behavior when selected, and annotations only when enabled.",
       ].join("\n");
     }
 
@@ -1218,6 +1349,14 @@ Accent:
     elements.showLegend.addEventListener("change", syncDiagramState);
     elements.showWorkloadSummary.addEventListener("change", syncDiagramState);
 
+    elements.diagramTypeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.diagramType = button.dataset.diagramType;
+        activateSegment(elements.diagramTypeButtons, button);
+        renderArchitecture();
+      });
+    });
+
     elements.totalVolumeUnits.forEach((button) => {
       button.addEventListener("click", () => {
         architectureState.totalVolumeUnit = button.dataset.volumeUnit;
@@ -1254,6 +1393,38 @@ Accent:
       button.addEventListener("click", () => {
         diagramState.layoutDirection = button.dataset.layoutDirection;
         activateSegment(elements.layoutDirectionButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.flowModeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.flowMode = button.dataset.flowMode;
+        activateSegment(elements.flowModeButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.flowAlignmentButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.flowAlignment = button.dataset.flowAlignment;
+        activateSegment(elements.flowAlignmentButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.flowDetailsPanelButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.flowDetailsPanel = button.dataset.flowDetailsPanel;
+        activateSegment(elements.flowDetailsPanelButtons, button);
+        renderArchitecture();
+      });
+    });
+
+    elements.flowAnnotationsButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        diagramState.flowAnnotations = button.dataset.flowAnnotations;
+        activateSegment(elements.flowAnnotationsButtons, button);
         renderArchitecture();
       });
     });
@@ -1344,6 +1515,10 @@ Accent:
 
     elements.copyAllBtn.addEventListener("click", () => {
       copyText(allMarkdown(), elements.copyAllStatus);
+    });
+
+    elements.copyFlowBtn.addEventListener("click", () => {
+      copyText(flowMarkdown(), elements.copyAllStatus);
     });
 
     elements.architectureOutput.addEventListener("click", () => {

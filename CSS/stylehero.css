@@ -512,6 +512,10 @@ textarea {
   gap: 12px;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .choice,
 .toggle-row {
   display: flex;
