@@ -138,6 +138,31 @@
     .module{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
     .module strong{color:var(--primary)}
     .issue{display:flex;justify-content:space-between;gap:12px;border-left:4px solid var(--accent);background:var(--soft);border-radius:12px;padding:12px;margin-top:10px}
+    .pipeline-stage{display:grid;grid-template-columns:1.5fr .8fr;gap:18px;align-items:stretch}
+    .pipeline-chart{min-height:480px;padding:14px;background:#FBFCFF;border:1px solid #DCE2EC;border-radius:18px;overflow:auto}
+    .pipeline-chart svg{min-width:920px;width:100%;height:auto;display:block}
+    .pipeline-node{cursor:pointer;outline:none}
+    .pipeline-node rect{fill:#fff;stroke:#CAD2E1;stroke-width:2;transition:.18s ease}
+    .pipeline-node text{pointer-events:none;font-weight:800;fill:var(--ink)}
+    .pipeline-node .pipeline-meta{font-size:12px;font-weight:700;fill:var(--muted)}
+    .pipeline-node.active rect,.pipeline-node:hover rect,.pipeline-node:focus rect{stroke:var(--primary);filter:drop-shadow(0 10px 18px rgba(23,1,208,.16))}
+    .pipeline-node.trigger rect{fill:#1701D0;stroke:#1701D0}
+    .pipeline-node.trigger text,.pipeline-node.terminal text{fill:#fff}
+    .pipeline-node.terminal rect{fill:#138A52;stroke:#138A52}
+    .pipeline-node.failure rect{fill:#FFF1E8;stroke:#F36A10}
+    .pipeline-edge{fill:none;stroke:#F36A10;stroke-width:4;marker-end:url(#pipelineArrow)}
+    .pipeline-edge.secondary{stroke:#A9B2C7;stroke-width:3}
+    .pipeline-edge.fail{stroke:#C93C3C;stroke-dasharray:8 7}
+    .pipeline-label{font-size:12px;font-weight:900;fill:#666B85;text-transform:uppercase}
+    .pipeline-detail{display:grid;gap:12px}
+    .pipeline-detail h4{margin:0;font-size:23px;color:var(--primary);text-align:center}
+    .pipeline-detail > .muted{text-align:center;max-width:520px;margin:0 auto}
+    .pipeline-kind{display:inline-flex;width:max-content;margin:0 auto;border-radius:999px;padding:6px 10px;background:rgba(23,1,208,.08);color:var(--primary);font-size:12px;font-weight:900;text-transform:uppercase}
+    .pipeline-facts{display:grid;gap:8px;margin:0}
+    .pipeline-facts div{display:grid;grid-template-columns:88px 1fr;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .pipeline-facts dt{font-weight:900;color:var(--muted)}
+    .pipeline-facts dd{margin:0;font-weight:800}
+    .pipeline-snippet{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0D0B2B;color:#fff;border-radius:14px;padding:14px;white-space:pre-wrap;line-height:1.55;font-size:13px}
     .tokens{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     .swatch{border-radius:16px;overflow:hidden;border:1px solid var(--line);cursor:pointer}
     .color{height:82px}.swatch div:last-child{padding:12px;font-weight:800;background:white}
@@ -155,10 +180,6 @@
     .slide small{color:#FFC9A8;font-weight:800}
     details{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
     summary{cursor:pointer;font-weight:900;color:var(--primary)}
-    .timeline{display:grid;gap:12px}
-    .event{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:start}
-    .time{font-weight:900;color:var(--accent)}
-    .event-card{border-left:4px solid var(--primary);background:var(--soft);padding:14px;border-radius:14px}
     .source-text-panel{background:#050505;color:#fff;border-radius:18px;padding:18px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
     .migration-timeline{position:relative;padding-left:32px;display:grid;gap:26px}
     .migration-timeline:before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:2px;background:#e0e0e0}
@@ -177,7 +198,7 @@
     textarea,.text-input{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
     footer{padding:40px 0 60px;color:var(--muted);text-align:center}
     @media(max-width:960px){
-      .demo-grid,.approaches,.module-grid,.tech-grid{grid-template-columns:1fr}
+      .demo-grid,.approaches,.module-grid,.tech-grid,.pipeline-stage{grid-template-columns:1fr}
       .grid{grid-template-columns:1fr 1fr}
       .tokens,.board,.flow-steps,.metric-row{grid-template-columns:1fr}
       .panel-head{display:block}
@@ -305,13 +326,12 @@
     const capabilities = [
       {id:'performance-scale', no:'01', title:'Timeline', tag:'Scale', desc:'Show the PostgreSQL upgrade narrative as raw source text plus an upgrade sequence.'},
       {id:'explore', no:'02', title:'Exploration & Planning', tag:'Compare', desc:'Compare implementation paths with pros, cons, metrics, and a live recommendation.'},
-      {id:'review', no:'03', title:'Code Review & Understanding', tag:'Scan', desc:'Read commented modules, inspect a diff, and filter review findings by severity.'},
+      {id:'review', no:'03', title:'Git Data Pipeline', tag:'Flow', desc:'Click through a git-triggered data pipeline from commit to production freshness checks.'},
       {id:'design', no:'04', title:'Design', tag:'Tokens', desc:'Make colors, component states, and theme choices visible and adjustable.'},
       {id:'prototype', no:'05', title:'Prototyping', tag:'Feel', desc:'Click through an app flow and see how states change before code is built.'},
       {id:'diagrams', no:'06', title:'Illustrations & Diagrams', tag:'SVG', desc:'Toggle labels and paths in an inline SVG system diagram.'},
       {id:'decks', no:'07', title:'Decks', tag:'Present', desc:'Navigate a lightweight slide deck with buttons and keyboard arrows.'},
       {id:'research', no:'08', title:'Research & Learning', tag:'Learn', desc:'Search a glossary and check comprehension in the same HTML artifact.'},
-      {id:'reports', no:'09', title:'Reports', tag:'Status', desc:'Update report metrics and see status summaries recalculate.'},
       {id:'editors', no:'10', title:'Custom Editing Interfaces', tag:'Loop', desc:'Edit a focused task board and export the result as markdown.'}
     ];
 
@@ -408,44 +428,90 @@ export function useDebounce(value, ms = 300) {
           </article>
         </div>`,
       review: `
-        <div class="panel-head"><div><h2>Code Review & Understanding</h2><p class="desc">Each module below includes comments that explain its responsibility. Use the severity filter to focus the review queue.</p></div><span class="tag">Reviewer-friendly</span></div>
-        <div class="demo-grid">
-          <div class="box">
-            <h4>Annotated diff</h4>
-            <div class="code"><span class="del">- return rawValue</span>
-<span class="add">+ return sanitize(rawValue)</span>
-<span class="comment">// Escapes user supplied markup before rendering.</span>
-<span class="add">+ logValidation(metricName)</span>
-<span class="comment">// Emits a metric so invalid payloads can be tracked.</span></div>
+        <div class="panel-head"><div><h2>Git data pipeline</h2><p class="desc">A git push starts validation, packaging, deployment, backfill checks, and monitoring. Click any step to see what runs and where the pipeline can stop.</p></div><span class="tag">Flowchart</span></div>
+        <div class="pipeline-stage">
+          <div class="pipeline-chart" aria-label="Git-triggered data pipeline flowchart">
+            <svg viewBox="0 0 980 500" role="img">
+              <defs>
+                <marker id="pipelineArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker>
+              </defs>
+              <path class="pipeline-edge" d="M165 78 H235"/>
+              <path class="pipeline-edge" d="M365 78 H435"/>
+              <path class="pipeline-edge" d="M565 78 H635"/>
+              <path class="pipeline-edge" d="M765 78 H835"/>
+              <path class="pipeline-edge" d="M885 130 V190 H700"/>
+              <path class="pipeline-edge" d="M570 240 H505"/>
+              <path class="pipeline-edge" d="M375 240 H305"/>
+              <path class="pipeline-edge" d="M175 240 H140 V335 H235"/>
+              <path class="pipeline-edge" d="M365 365 H455"/>
+              <path class="pipeline-edge fail" d="M500 130 V170 H300 V190"/>
+              <path class="pipeline-edge fail" d="M700 290 V420 H500"/>
+              <text class="pipeline-label" x="385" y="166">fail</text>
+              <text class="pipeline-label" x="660" y="415">late data</text>
+
+              <g class="pipeline-node trigger active" data-step="push" tabindex="0">
+                <rect x="35" y="38" width="130" height="80" rx="18"/>
+                <text x="100" y="73" text-anchor="middle">git push</text>
+                <text class="pipeline-meta" x="100" y="96" text-anchor="middle">main branch</text>
+              </g>
+              <g class="pipeline-node" data-step="ci" tabindex="0">
+                <rect x="235" y="38" width="130" height="80" rx="18"/>
+                <text x="300" y="70" text-anchor="middle">CI checks</text>
+                <text class="pipeline-meta" x="300" y="95" text-anchor="middle">lint + tests</text>
+              </g>
+              <g class="pipeline-node" data-step="package" tabindex="0">
+                <rect x="435" y="38" width="130" height="80" rx="18"/>
+                <text x="500" y="70" text-anchor="middle">Package</text>
+                <text class="pipeline-meta" x="500" y="95" text-anchor="middle">DAG + image</text>
+              </g>
+              <g class="pipeline-node" data-step="staging" tabindex="0">
+                <rect x="635" y="38" width="130" height="80" rx="18"/>
+                <text x="700" y="70" text-anchor="middle">Staging</text>
+                <text class="pipeline-meta" x="700" y="95" text-anchor="middle">deploy + seed</text>
+              </g>
+              <g class="pipeline-node" data-step="prod" tabindex="0">
+                <rect x="835" y="38" width="130" height="80" rx="18"/>
+                <text x="900" y="70" text-anchor="middle">Prod DAG</text>
+                <text class="pipeline-meta" x="900" y="95" text-anchor="middle">schedule on</text>
+              </g>
+              <g class="pipeline-node" data-step="backfill" tabindex="0">
+                <rect x="570" y="200" width="130" height="80" rx="18"/>
+                <text x="635" y="232" text-anchor="middle">Backfill</text>
+                <text class="pipeline-meta" x="635" y="257" text-anchor="middle">dry run</text>
+              </g>
+              <g class="pipeline-node" data-step="quality" tabindex="0">
+                <rect x="375" y="200" width="130" height="80" rx="18"/>
+                <text x="440" y="232" text-anchor="middle">Quality gate</text>
+                <text class="pipeline-meta" x="440" y="257" text-anchor="middle">schema + drift</text>
+              </g>
+              <g class="pipeline-node" data-step="warehouse" tabindex="0">
+                <rect x="175" y="200" width="130" height="80" rx="18"/>
+                <text x="240" y="232" text-anchor="middle">Warehouse</text>
+                <text class="pipeline-meta" x="240" y="257" text-anchor="middle">models update</text>
+              </g>
+              <g class="pipeline-node terminal" data-step="freshness" tabindex="0">
+                <rect x="235" y="325" width="130" height="80" rx="18"/>
+                <text x="300" y="357" text-anchor="middle">Freshness ok</text>
+                <text class="pipeline-meta" x="300" y="382" text-anchor="middle">dashboards live</text>
+              </g>
+              <g class="pipeline-node failure" data-step="alert" tabindex="0">
+                <rect x="455" y="325" width="130" height="80" rx="18"/>
+                <text x="520" y="357" text-anchor="middle">Alert + hold</text>
+                <text class="pipeline-meta" x="520" y="382" text-anchor="middle">Slack + rollback</text>
+              </g>
+            </svg>
           </div>
-          <div class="box">
-            <h4>Review focus</h4>
-            <div class="control-row">
-              <label><input name="severity" type="radio" value="all" checked> All</label>
-              <label><input name="severity" type="radio" value="high"> High</label>
-              <label><input name="severity" type="radio" value="medium"> Medium</label>
-            </div>
-            <div id="reviewIssues"></div>
-          </div>
-        </div>
-        <div class="box wide">
-          <h4>Commented module map</h4>
-          <div class="module-grid">
-            <article class="module"><strong>TaskSearch.tsx</strong><div class="code"><span class="comment">// Owns the search input state.</span>
-const [draft, setDraft] = useState('');
-<span class="comment">// Keeps fetching separate from typing.</span>
-const query = useDebounce(draft, 300);</div></article>
-            <article class="module"><strong>useDebounce.ts</strong><div class="code"><span class="comment">// Converts a fast-changing value into a stable value.</span>
-export function useDebounce(value, ms) {
-  <span class="comment">// Cleanup prevents stale timers after unmount.</span>
-  return debounced;
-}</div></article>
-            <article class="module"><strong>tasks.api.ts</strong><div class="code"><span class="comment">// Accepts the settled query and calls the API.</span>
-export function useTasks(params) {
-  <span class="comment">// Query key includes search for cache isolation.</span>
-  return useQuery(['tasks', params]);
-}</div></article>
-          </div>
+          <aside class="box pipeline-detail">
+            <span class="pipeline-kind" id="pipelineKind"></span>
+            <h4 id="pipelineTitle"></h4>
+            <p class="muted" id="pipelineBody"></p>
+            <dl class="pipeline-facts">
+              <div><dt>Runs</dt><dd id="pipelineRuns"></dd></div>
+              <div><dt>Time</dt><dd id="pipelineTime"></dd></div>
+              <div><dt>Stops if</dt><dd id="pipelineStops"></dd></div>
+            </dl>
+            <div class="pipeline-snippet" id="pipelineSnippet"></div>
+          </aside>
         </div>`,
       design: `
         <div class="panel-head"><div><h2>Design</h2><p class="desc">Choose a token and watch the component preview update. This makes visual decisions testable without opening a design tool.</p></div><span class="tag">Design system</span></div>
@@ -488,12 +554,6 @@ export function useTasks(params) {
           <div class="box"><h4>Glossary search</h4><input class="text-input" id="glossarySearch" placeholder="Search terms"><div id="glossaryList"></div></div>
           <div class="box"><h4>Quick check</h4><p class="muted">Which artifact is best when the output needs code, style, and interaction in one portable file?</p><select id="quizAnswer" class="text-input"><option value="">Choose an answer</option><option>Markdown note</option><option>HTML artifact</option><option>Plain text email</option></select><p id="quizResult" class="muted"></p></div>
         </div>`,
-      reports: `
-        <div class="panel-head"><div><h2>Reports</h2><p class="desc">Change the metric inputs and the summary recalculates. This is useful for weekly updates, incident notes, and team status reviews.</p></div><span class="tag">Readable</span></div>
-        <div class="demo-grid">
-          <div class="box"><h4>Status inputs</h4><label>Delivery <input id="deliveryRange" type="range" min="0" max="100" value="74"></label><br><label>Quality <input id="qualityRange" type="range" min="0" max="100" value="82"></label><br><label>Risk <input id="reportRiskRange" type="range" min="0" max="100" value="35"></label><p id="reportSummary" class="muted"></p></div>
-          <div class="box"><h4>Incident timeline</h4><div class="timeline"><div class="event"><div class="time">09:00</div><div class="event-card">Signal detected</div></div><div class="event"><div class="time">09:18</div><div class="event-card">Owner assigned</div></div><div class="event"><div class="time">09:45</div><div class="event-card">Fix verified</div></div></div></div>
-        </div>`,
       editors: `
         <div class="panel-head"><div><h2>Custom Editing Interfaces</h2><p class="desc">Edit the selected ticket and export the board as markdown. This keeps the user in the loop while producing structured output.</p></div><span class="tag">User-in-loop</span></div>
         <div class="demo-grid">
@@ -519,11 +579,98 @@ export function useTasks(params) {
       panels.appendChild(panel);
     });
 
-    const reviewItems = [
-      {severity:'high', text:'Sanitize the rendered task title before inserting it into the preview.'},
-      {severity:'medium', text:'Move the debounce delay into a named constant used by tests.'},
-      {severity:'medium', text:'Add a fake timer test for unmount cleanup.'}
-    ];
+    const pipelineSteps = {
+      push: {
+        kind: 'trigger',
+        title: 'git push main',
+        body: 'A merge or direct push to main starts the data-pipeline workflow. Feature branches run checks only and never deploy schedules.',
+        runs: 'GitHub Actions',
+        time: '0s',
+        stops: 'Branch is not main',
+        snippet: 'on:\n  push:\n    branches: [main]\n    paths:\n      - dags/**\n      - models/**\n      - schemas/**'
+      },
+      ci: {
+        kind: 'validation',
+        title: 'CI checks',
+        body: 'The workflow validates Python, SQL, DAG imports, schema contracts, and unit tests before any pipeline artifact is published.',
+        runs: 'ruff, pytest, dbt compile',
+        time: '~4 min',
+        stops: 'Lint, import, or contract test fails',
+        snippet: 'ruff check dags tests\npytest tests/pipeline\nastro dev parse\ndbt compile --profiles-dir ci'
+      },
+      package: {
+        kind: 'artifact',
+        title: 'Package DAG and image',
+        body: 'The tested DAG bundle is baked into an orchestrator image and tagged with the git SHA so every deployed schedule is traceable.',
+        runs: 'Docker + registry',
+        time: '~3 min',
+        stops: 'Image build or registry push fails',
+        snippet: 'docker build -t registry/data-pipeline:$SHA .\ndocker push registry/data-pipeline:$SHA'
+      },
+      staging: {
+        kind: 'deploy',
+        title: 'Deploy to staging',
+        body: 'Staging receives the new image, loads seed fixtures, and runs a smoke DAG against isolated warehouse tables.',
+        runs: 'Airflow staging',
+        time: '~6 min',
+        stops: 'Smoke DAG or seed load fails',
+        snippet: 'helm upgrade data-pipeline ./chart \\\n  --set image.tag=$SHA \\\n  --namespace staging'
+      },
+      prod: {
+        kind: 'release',
+        title: 'Enable production DAG',
+        body: 'After staging passes, production points at the new image and the target DAG schedule is unpaused.',
+        runs: 'Airflow production',
+        time: '~90s',
+        stops: 'Deployment lock is held',
+        snippet: 'airflow dags unpause customer_daily_snapshot\nairflow dags trigger customer_daily_snapshot'
+      },
+      backfill: {
+        kind: 'replay',
+        title: 'Backfill dry run',
+        body: 'A bounded replay checks the changed task against recent partitions before the regular schedule touches live reporting data.',
+        runs: 'Last 3 partitions',
+        time: '~8 min',
+        stops: 'Partition retry budget is exceeded',
+        snippet: 'airflow dags backfill customer_daily_snapshot \\\n  --start-date 2026-06-01 \\\n  --end-date 2026-06-03 \\\n  --dry-run'
+      },
+      quality: {
+        kind: 'decision',
+        title: 'Quality gate',
+        body: 'Schema drift, row counts, null thresholds, and freshness checks decide whether the output can promote or must be held.',
+        runs: 'Great Expectations + dbt tests',
+        time: '~5 min',
+        stops: 'Any critical expectation fails',
+        snippet: 'dbt test --select customer_daily_snapshot\ngreat_expectations checkpoint run pipeline_release'
+      },
+      warehouse: {
+        kind: 'publish',
+        title: 'Warehouse models update',
+        body: 'Validated transformations update analytics tables and publish downstream metadata for dashboards and data consumers.',
+        runs: 'Snowflake warehouse',
+        time: '~10 min',
+        stops: 'Model run fails',
+        snippet: 'dbt run --select customer_daily_snapshot+\ndbt docs generate\ncatalog publish --env prod'
+      },
+      freshness: {
+        kind: 'success',
+        title: 'Freshness ok',
+        body: 'The release is complete once production freshness is green and dashboards point at the new successful run.',
+        runs: 'Observability monitor',
+        time: '~2 min',
+        stops: 'No stop; this is the green path',
+        snippet: 'freshness_status=healthy\nnotify #data-platform "pipeline release complete"'
+      },
+      alert: {
+        kind: 'failure path',
+        title: 'Alert and hold',
+        body: 'Failed gates pause the production schedule, keep the previous artifact active, and notify owners with the failing run link.',
+        runs: 'Rollback guard',
+        time: '<1 min',
+        stops: 'Manual owner review',
+        snippet: 'airflow dags pause customer_daily_snapshot\nnotify #data-incidents "release held: quality gate failed"'
+      }
+    };
     const flowCopy = [
       {title:'Choose', text:'Pick a template and set the starting content.'},
       {title:'Preview', text:'Check spacing, content density, and first-pass hierarchy.'},
@@ -577,7 +724,6 @@ export function useTasks(params) {
       wireDiagram();
       wireDeck();
       wireResearch();
-      wireReports();
       wireEditors();
     }
 
@@ -632,17 +778,29 @@ export function useTasks(params) {
     }
 
     function wireReview(){
-      const target = document.getElementById('reviewIssues');
-      if(!target) return;
-      const render = () => {
-        const filter = document.querySelector('input[name="severity"]:checked').value;
-        target.innerHTML = reviewItems
-          .filter(item => filter === 'all' || item.severity === filter)
-          .map(item => `<div class="issue"><span>${item.text}</span><strong>${item.severity}</strong></div>`)
-          .join('');
+      const title = document.getElementById('pipelineTitle');
+      if(!title) return;
+      const render = id => {
+        const step = pipelineSteps[id];
+        document.querySelectorAll('.pipeline-node').forEach(node => node.classList.toggle('active', node.dataset.step === id));
+        document.getElementById('pipelineKind').textContent = step.kind;
+        title.textContent = step.title;
+        document.getElementById('pipelineBody').textContent = step.body;
+        document.getElementById('pipelineRuns').textContent = step.runs;
+        document.getElementById('pipelineTime').textContent = step.time;
+        document.getElementById('pipelineStops').textContent = step.stops;
+        document.getElementById('pipelineSnippet').textContent = step.snippet;
       };
-      document.querySelectorAll('input[name="severity"]').forEach(input => input.onchange = render);
-      render();
+      document.querySelectorAll('.pipeline-node').forEach(node => {
+        node.onclick = () => render(node.dataset.step);
+        node.onkeydown = event => {
+          if(event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            render(node.dataset.step);
+          }
+        };
+      });
+      render('push');
     }
 
     function wireDesign(){
@@ -712,20 +870,6 @@ export function useTasks(params) {
       render();
     }
 
-    function wireReports(){
-      const delivery = document.getElementById('deliveryRange');
-      if(!delivery) return;
-      const update = () => {
-        const d = Number(delivery.value);
-        const q = Number(document.getElementById('qualityRange').value);
-        const r = Number(document.getElementById('reportRiskRange').value);
-        const health = Math.round((d + q + (100 - r)) / 3);
-        document.getElementById('reportSummary').textContent = `Overall health: ${health}%. Delivery ${d}%, quality ${q}%, risk ${r}%.`;
-      };
-      ['deliveryRange','qualityRange','reportRiskRange'].forEach(id => document.getElementById(id).oninput = update);
-      update();
-    }
-
     function wireEditors(){
       const editBoard = document.getElementById('editBoard');
       if(!editBoard) return;
@@ -753,7 +897,7 @@ export function useTasks(params) {
     }
 
     function copySummary(){
-      const text = 'HTML can act as a single-file interface for exploration, review, design, prototyping, diagrams, decks, research, reports, and custom editors.';
+      const text = 'HTML can act as a single-file interface for exploration, data pipelines, design, prototyping, diagrams, decks, research, and custom editors.';
       navigator.clipboard.writeText(text);
       alert('Summary copied.');
     }
