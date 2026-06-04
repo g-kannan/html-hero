@@ -580,6 +580,11 @@ input[type="range"]:focus {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.segmented.five {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .segment {
   min-height: 42px;
   border-left: 1px solid var(--line);
@@ -856,7 +861,8 @@ input[type="range"]:focus {
 
   .segmented,
   .segmented.wide,
-  .segmented.four {
+  .segmented.four,
+  .segmented.five {
     grid-auto-flow: row;
     grid-template-columns: 1fr;
   }
