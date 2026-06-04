@@ -325,7 +325,6 @@
   <script>
     const capabilities = [
       {id:'performance-scale', no:'01', title:'Timeline', tag:'Scale', desc:'Show the PostgreSQL upgrade narrative as raw source text plus an upgrade sequence.'},
-      {id:'explore', no:'02', title:'Exploration & Planning', tag:'Compare', desc:'Compare implementation paths with pros, cons, metrics, and a live recommendation.'},
       {id:'review', no:'03', title:'Git Data Pipeline', tag:'Flow', desc:'Click through a git-triggered data pipeline from commit to production freshness checks.'},
       {id:'design', no:'04', title:'Design', tag:'Tokens', desc:'Make colors, component states, and theme choices visible and adjustable.'},
       {id:'prototype', no:'05', title:'Prototyping', tag:'Feel', desc:'Click through an app flow and see how states change before code is built.'},
@@ -377,55 +376,6 @@ functional issues have been observed.</div>
               </div>
             </div>
           </div>
-        </div>`,
-      explore: `
-        <div class="panel-head"><div><h2>Exploration & Planning</h2><p class="desc">Like an approach memo, this module puts options, code shape, pros, cons, and metrics in one place. Move the priority sliders to change the recommendation.</p></div><span class="tag">Decision-ready</span></div>
-        <div class="box wide">
-          <h4>Planning priorities</h4>
-          <div class="control-row">
-            <label>Speed <input id="speedRange" type="range" min="1" max="5" value="3"></label>
-            <label>Reuse <input id="reuseRange" type="range" min="1" max="5" value="4"></label>
-            <label>Risk control <input id="riskRange" type="range" min="1" max="5" value="4"></label>
-          </div>
-          <p class="muted" id="exploreRecommendation"></p>
-        </div>
-        <div class="approaches">
-          <article class="approach" data-plan="inline">
-            <h4>01 Inline useEffect <span class="badge">Fast</span></h4>
-            <p class="muted">Debounce logic lives directly in the component that owns the input.</p>
-            <div class="code"><span class="keyword">useEffect</span>(() => {
-  const id = setTimeout(() => setQuery(draft), 300);
-  return () => clearTimeout(id);
-}, [draft]);</div>
-            <div class="pros-cons"><div><strong>Pros</strong><ul><li>Zero abstraction</li><li>Easy to debug</li><li>No dependency</li></ul></div><div><strong>Cons</strong><ul><li>Duplicates quickly</li><li>Two state values</li><li>Delay is buried</li></ul></div></div>
-            <div class="score"><span style="width:62%"></span></div><p class="muted">Bundle +0 kb | Testability medium | Reuse low</p>
-          </article>
-          <article class="approach selected" data-plan="hook">
-            <h4>02 Custom hook <span class="badge">Balanced</span></h4>
-            <p class="muted">Extract the timer into a shared hook under the hooks folder.</p>
-            <div class="code"><span class="comment">// src/hooks/useDebounce.ts</span>
-export function useDebounce(value, ms = 300) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), ms);
-    return () => clearTimeout(id);
-  }, [value, ms]);
-  return debounced;
-}</div>
-            <div class="pros-cons"><div><strong>Pros</strong><ul><li>Reusable import</li><li>Simple fake-timer tests</li><li>Delay is visible</li></ul></div><div><strong>Cons</strong><ul><li>One more file</li><li>Generic naming needs docs</li><li>Still renders per keypress</li></ul></div></div>
-            <div class="score"><span style="width:86%"></span></div><p class="muted">Bundle +0.2 kb | Testability high | Reuse high</p>
-          </article>
-          <article class="approach" data-plan="library">
-            <h4>03 External library <span class="badge">Power</span></h4>
-            <p class="muted">Use a small utility package when edge semantics matter.</p>
-            <div class="code">const onChange = useDebouncedCallback(
-  next => setQuery(next),
-  300,
-  { maxWait: 1000 }
-);</div>
-            <div class="pros-cons"><div><strong>Pros</strong><ul><li>maxWait support</li><li>Flush and cancel</li><li>Battle-tested cases</li></ul></div><div><strong>Cons</strong><ul><li>New dependency</li><li>Audit overhead</li><li>Pattern drift risk</li></ul></div></div>
-            <div class="score"><span style="width:72%"></span></div><p class="muted">Bundle +1.4 kb | Testability high | Reuse high</p>
-          </article>
         </div>`,
       review: `
         <div class="panel-head"><div><h2>Git data pipeline</h2><p class="desc">A git push starts validation, packaging, deployment, backfill checks, and monitoring. Click any step to see what runs and where the pipeline can stop.</p></div><span class="tag">Flowchart</span></div>
@@ -717,7 +667,6 @@ export function useDebounce(value, ms = 300) {
 
     function wireDynamicControls(){
       wireTechnicalCapabilities();
-      wireExploration();
       wireReview();
       wireDesign();
       wirePrototype();
@@ -759,22 +708,6 @@ export function useDebounce(value, ms = 300) {
       if(range && rangeOutput){
         range.oninput = event => rangeOutput.textContent = `Slider value: ${event.target.value}`;
       }
-    }
-
-    function wireExploration(){
-      const speed = document.getElementById('speedRange');
-      if(!speed) return;
-      const update = () => {
-        const reuse = Number(document.getElementById('reuseRange').value);
-        const risk = Number(document.getElementById('riskRange').value);
-        const speedValue = Number(speed.value);
-        const choice = speedValue > reuse && speedValue > risk ? 'inline' : reuse + risk > 7 ? 'hook' : 'library';
-        document.querySelectorAll('.approach').forEach(card => card.classList.toggle('selected', card.dataset.plan === choice));
-        const label = choice === 'inline' ? 'Approach 01 wins because speed matters most.' : choice === 'hook' ? 'Approach 02 wins because reuse and risk control are both important.' : 'Approach 03 wins because advanced debounce behavior matters.';
-        document.getElementById('exploreRecommendation').textContent = label;
-      };
-      ['speedRange','reuseRange','riskRange'].forEach(id => document.getElementById(id).oninput = update);
-      update();
     }
 
     function wireReview(){
