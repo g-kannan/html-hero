@@ -574,32 +574,32 @@ Accent:
 
     let palettes = [];
     let selectedId = "";
-    let selectedPromptId = "executive-decision-brief";
+    let selectedPromptId = "csv-searchable-html";
     const promptTemplates = [
+      {
+        id: "csv-searchable-html",
+        title: "CSV/XLSX to searchable HTML",
+        text: "Convert the given CSV or XLSX data into a self-contained searchable HTML page. For XLSX, read all sheets and make each sheet searchable with sortable/filterable rows and preserved source data. Preserve every row and column exactly; do not summarize, sample, truncate, or replace data with placeholders. When embedding data, avoid one fragile long JavaScript string; use a safe application/json data block or chunked JSON arrays, escape closing script tags, then parse and validate row counts in the page. For large datasets, use a fixed-height scrollable table region with sticky headers, horizontal scrolling for wide sheets, and pagination or virtualized rendering; keep search and sheet controls visible outside the scroll area, and show visible/total row counts for each sheet.",
+      },
+      {
+        id: "prototype-demo-handoff",
+        title: "Prototype / demo handoff",
+        text: "Transform this input into an HTML demo brief with user flow, states, acceptance criteria, and risks.",
+      },
       {
         id: "executive-decision-brief",
         title: "Executive decision brief",
         text: "Convert this input into an HTML decision brief with: recommendation, evidence, risks, decision owner, and next action.",
       },
       {
-        id: "architecture-review",
-        title: "Architecture review",
-        text: "Render this input as an HTML architecture review page with: context, diagram placeholders, dependencies, and open questions.",
+        id: "pr-review-evaluation",
+        title: "PR review evaluation",
+        text: "Convert this pull request input into an HTML review evaluation with: Why, Where to focus, Test Plan, Rollout, and Rollback.",
       },
       {
         id: "option-comparison",
         title: "Option comparison",
         text: "Turn this input into an HTML comparison matrix with trade-offs, impact, effort, and recommendation.",
-      },
-      {
-        id: "data-story-from-analysis",
-        title: "Data story from input",
-        text: "Build an HTML insight page from this input with: headline, key metrics, evidence table, and implication.",
-      },
-      {
-        id: "prototype-demo-handoff",
-        title: "Prototype / demo handoff",
-        text: "Transform this input into an HTML demo brief with user flow, states, acceptance criteria, and risks.",
       },
     ];
     const architectureState = {
