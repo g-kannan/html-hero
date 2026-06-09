@@ -14,6 +14,10 @@
         <p class="intro">Configure themes, architecture inputs, and quick prompts for presentation-ready HTML outputs.</p>
       </div>
       <div class="stats app-actions" aria-live="polite">
+        <button id="resetAllBtn" class="btn secondary" type="button" title="Reset all inputs to defaults">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12a7 7 0 1 1-7-7c1.86 0 3.55.73 4.8 1.9L19 9m0-4v4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Reset All
+        </button>
         <button id="copyAllBtn" class="btn" type="button" title="Copy architecture inputs as Markdown">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
           Copy Architecture Inputs
@@ -64,10 +68,15 @@
         <section class="selection architecture-form" aria-labelledby="workloadTitle">
           <div class="panel-title">
             <h2 id="workloadTitle">Workload Inputs</h2>
-            <button id="copyArchitectureBtn" class="btn" type="button" title="Copy workload and diagram options as Markdown">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-              Copy
-            </button>
+            <div class="panel-actions">
+              <button id="resetArchitectureBtn" class="btn secondary" type="button" title="Reset workload inputs to defaults">
+                Reset
+              </button>
+              <button id="copyArchitectureBtn" class="btn" type="button" title="Copy workload and diagram options as Markdown">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                Copy
+              </button>
+            </div>
           </div>
 
           <div class="form-grid">
@@ -241,10 +250,15 @@
         <section class="selection architecture-form" aria-labelledby="targetPlatformTitle">
           <div class="panel-title">
             <h2 id="targetPlatformTitle">Target Platform</h2>
-            <button id="copyTargetPlatformBtn" class="btn" type="button" title="Copy target platform as Markdown">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-              Copy
-            </button>
+            <div class="panel-actions">
+              <button id="resetTargetPlatformBtn" class="btn secondary" type="button" title="Reset target platform inputs to defaults">
+                Reset
+              </button>
+              <button id="copyTargetPlatformBtn" class="btn" type="button" title="Copy target platform as Markdown">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8V5.7A1.7 1.7 0 0 1 9.7 4h8.6A1.7 1.7 0 0 1 20 5.7v8.6a1.7 1.7 0 0 1-1.7 1.7H16M5.7 8h8.6A1.7 1.7 0 0 1 16 9.7v8.6a1.7 1.7 0 0 1-1.7 1.7H5.7A1.7 1.7 0 0 1 4 18.3V9.7A1.7 1.7 0 0 1 5.7 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                Copy
+              </button>
+            </div>
           </div>
 
           <div class="form-grid">
@@ -564,6 +578,9 @@ Accent:
 | Anthropic | #D97757 | #6A9BCC | Poppins | `;
 
     const elements = {
+      resetAllBtn: document.querySelector("#resetAllBtn"),
+      resetArchitectureBtn: document.querySelector("#resetArchitectureBtn"),
+      resetTargetPlatformBtn: document.querySelector("#resetTargetPlatformBtn"),
       copyAllBtn: document.querySelector("#copyAllBtn"),
       copyFlowBtn: document.querySelector("#copyFlowBtn"),
       copyAllStatus: document.querySelector("#copyAllStatus"),
@@ -1316,6 +1333,117 @@ Accent:
       syncArchitectureState();
     }
 
+    function resetArchitecture() {
+      // Reset state variables
+      Object.assign(architectureState, {
+        sources: [],
+        customSource: "",
+        rdbmsType: "",
+        totalVolume: "100",
+        totalVolumeUnit: "GB",
+        dailyVolume: "500000",
+        dailyVolumeUnit: "Rows",
+        existingEtlPipelineCount: "0",
+        loadType: "Full",
+        streamingPercent: 0,
+      });
+
+      Object.assign(diagramState, {
+        diagramType: "Architecture",
+        lineAnimation: true,
+        showLegend: true,
+        showWorkloadSummary: true,
+        diagramDensity: "Balanced",
+        layoutDirection: "Left-to-right",
+        flowMode: "Auto",
+        flowAlignment: "Lanes",
+        flowDetailsPanel: "Right",
+        flowAnnotations: "On",
+      });
+
+      // Reset UI elements
+      elements.sourceInputs.forEach((input) => {
+        input.checked = false;
+      });
+      elements.customSourceInput.value = "";
+      elements.rdbmsTypeInput.value = "";
+
+      elements.totalVolume.value = "100";
+      activateSegmentValue(elements.totalVolumeUnits, "volumeUnit", "GB");
+
+      elements.dailyVolume.value = "500000";
+      activateSegmentValue(elements.dailyVolumeUnits, "dailyUnit", "Rows");
+
+      elements.existingEtlPipelineCount.value = "0";
+
+      activateSegmentValue(elements.loadTypeButtons, "loadType", "Full");
+
+      elements.streamingMix.value = 0;
+
+      elements.lineAnimation.checked = true;
+      elements.showLegend.checked = true;
+      elements.showWorkloadSummary.checked = true;
+
+      activateSegmentValue(elements.diagramTypeButtons, "diagramType", "Architecture");
+      activateSegmentValue(elements.diagramDensityButtons, "diagramDensity", "Balanced");
+      activateSegmentValue(elements.layoutDirectionButtons, "layoutDirection", "Left-to-right");
+
+      activateSegmentValue(elements.flowModeButtons, "flowMode", "Auto");
+      activateSegmentValue(elements.flowAlignmentButtons, "flowAlignment", "Lanes");
+      activateSegmentValue(elements.flowDetailsPanelButtons, "flowDetailsPanel", "Right");
+      activateSegmentValue(elements.flowAnnotationsButtons, "flowAnnotations", "On");
+
+      renderArchitecture();
+    }
+
+    function resetTargetPlatform() {
+      // Reset state variables
+      Object.assign(targetPlatformState, {
+        cloud: "AWS",
+        dataPlatform: "None",
+        etlTools: [],
+        customEtlTool: "",
+        orchestrators: [],
+        customOrchestrator: "",
+        tableFormats: [],
+        catalog: "None",
+        consumptionLayers: [],
+        customConsumptionLayer: "",
+      });
+
+      // Reset UI elements
+      activateSegmentValue(elements.targetCloudButtons, "targetCloud", "AWS");
+      activateSegmentValue(elements.dataPlatformButtons, "dataPlatform", "None");
+
+      elements.etlToolInputs.forEach((input) => {
+        input.checked = false;
+      });
+      elements.customEtlToolInput.value = "";
+
+      elements.orchestratorInputs.forEach((input) => {
+        input.checked = false;
+      });
+      elements.customOrchestratorInput.value = "";
+
+      elements.tableFormatInputs.forEach((input) => {
+        input.checked = false;
+      });
+
+      setTargetCatalog("None");
+
+      elements.consumptionLayerInputs.forEach((input) => {
+        input.checked = false;
+      });
+      elements.customConsumptionLayerInput.value = "";
+
+      renderTargetPlatform();
+    }
+
+    function resetAll() {
+      resetArchitecture();
+      resetTargetPlatform();
+    }
+
     elements.paletteGrid.addEventListener("click", (event) => {
       const card = event.target.closest(".palette");
       if (!card) return;
@@ -1345,6 +1473,9 @@ Accent:
     elements.customSourceInput.addEventListener("input", syncArchitectureState);
     elements.rdbmsTypeInput.addEventListener("input", syncArchitectureState);
     elements.resetSourcesBtn.addEventListener("click", resetDataSources);
+    elements.resetArchitectureBtn.addEventListener("click", resetArchitecture);
+    elements.resetTargetPlatformBtn.addEventListener("click", resetTargetPlatform);
+    elements.resetAllBtn.addEventListener("click", resetAll);
     elements.totalVolume.addEventListener("input", syncArchitectureState);
     elements.dailyVolume.addEventListener("input", syncArchitectureState);
     elements.existingEtlPipelineCount.addEventListener("input", syncArchitectureState);
